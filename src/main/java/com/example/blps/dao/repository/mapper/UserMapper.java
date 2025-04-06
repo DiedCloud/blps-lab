@@ -13,4 +13,13 @@ public class UserMapper {
                 user.getPassword()
         );
     }
+
+    static public com.example.blps.dao.repository.model.User toUserRepoEntity(com.example.blps.entity.User user) {
+        com.example.blps.dao.repository.model.User u1 = new com.example.blps.dao.repository.model.User();
+        if (user.getId() != null) u1.setId(user.getId());
+        u1.setLogin(user.getLogin());
+        u1.setPassword(user.getPassword());
+        u1.setName(user.getName());
+        return u1;
+    }
 }
