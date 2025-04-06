@@ -1,0 +1,10 @@
+package com.example.blps.dao.repository;
+
+import com.example.blps.dao.repository.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByLogin(String login);
+
+    Boolean existsByLogin(String login);
+}
