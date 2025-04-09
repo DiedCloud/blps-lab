@@ -9,7 +9,7 @@ public class CommentMapper {
         return new com.example.blps.entity.Comment(
                 comment.getId(),
                 UserMapper.getUser(comment.getAuthor()),
-                comment.getComment(),
+                comment.getContent(),
                 comment.getPublished()
         );
     }
@@ -20,7 +20,7 @@ public class CommentMapper {
         com.example.blps.dao.repository.model.Comment c1 = new com.example.blps.dao.repository.model.Comment();
         if (comment.getId() != null) c1.setId(comment.getId());
         c1.setAuthor(UserMapper.toUserRepoEntity(comment.getAuthor()));
-        c1.setComment(comment.getComment());
+        c1.setContent(comment.getContent());
         c1.setPublished(comment.getPublished());
         return c1;
     }

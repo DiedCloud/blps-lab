@@ -17,7 +17,7 @@ public class Comment {
     User author;
 
     @Column(nullable = false)
-    String comment;
+    String content;
     @Column(nullable = false)
     LocalDateTime published;
 }
