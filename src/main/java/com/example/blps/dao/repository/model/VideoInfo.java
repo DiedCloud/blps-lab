@@ -19,6 +19,9 @@ public class VideoInfo {
     @Column(nullable = false)
     LocalDateTime published;
 
+    @Enumerated(EnumType.STRING)
+    private MonetizationStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     User author;

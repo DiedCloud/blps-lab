@@ -22,6 +22,7 @@ create table Video_Info
     description text         not null,
     published   timestamp    not null,
     author_id   bigint       not null,
+    status      varchar(32) not null,
     foreign key (author_id) REFERENCES Client (id) ON DELETE cascade ON UPDATE cascade
 );
 
@@ -30,5 +31,14 @@ create table Monetization_Info
     video_id  bigint primary key,
     percent   float not null,
     is_agreed bool  not null,
+    foreign key (video_id) REFERENCES Video_Info (id) ON DELETE cascade ON UPDATE cascade
+);
+
+create table Appeal
+(
+    id bigserial primary key,
+    video_id  bigint not null,
+    reason varchar(128),
+    processed bool not null,
     foreign key (video_id) REFERENCES Video_Info (id) ON DELETE cascade ON UPDATE cascade
 );
