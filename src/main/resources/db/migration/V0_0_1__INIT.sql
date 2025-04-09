@@ -1,4 +1,4 @@
-create table User
+create table Client
 (
     id       bigserial primary key,
     login    varchar(255) not null unique,
@@ -12,7 +12,7 @@ create table Comment
     author_id bigint    not null,
     content   text      not null,
     published timestamp not null,
-    foreign key (user_id) REFERENCES User (id) ON DELETE cascade ON UPDATE cascade
+    foreign key (author_id) REFERENCES Client (id) ON DELETE cascade ON UPDATE cascade
 );
 
 create table Video_Info
@@ -22,7 +22,7 @@ create table Video_Info
     description text         not null,
     published   timestamp    not null,
     author_id   bigint       not null,
-    foreign key (user_id) REFERENCES User (id) ON DELETE cascade ON UPDATE cascade
+    foreign key (author_id) REFERENCES Client (id) ON DELETE cascade ON UPDATE cascade
 );
 
 create table Monetization_Info

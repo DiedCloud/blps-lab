@@ -12,7 +12,7 @@ public class Comment {
     @NonNull
     User author;
     @NonNull
-    String comment;
+    String content;
     @NonNull
     LocalDateTime published;
 }
