@@ -1,6 +1,7 @@
 package com.example.blps.dao.controller;
 
 import com.example.blps.exception.IllegalContent;
+import com.example.blps.exception.VideoLoadingError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -8,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 @RestControllerAdvice
 public class ExceptionHandlerController {
@@ -38,6 +40,11 @@ public class ExceptionHandlerController {
     @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
     public ResponseEntity<String> tooManyRequests(Exception ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(VideoLoadingError.class)
+    public ResponseEntity<String> videoLoadingError(HttpServerErrorException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getLocalizedMessage());
     }
 
     @ExceptionHandler(Exception.class)
