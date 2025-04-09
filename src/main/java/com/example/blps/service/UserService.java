@@ -4,6 +4,7 @@ import com.example.blps.dao.repository.UserRepository;
 import com.example.blps.dao.repository.mapper.UserMapper;
 import com.example.blps.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +26,10 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
         return UserMapper.getUser(user);
+    }
+
+    public User getCurrentUser() {
+        return getByLogin(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     public User createUser(String login, String password, String name) {
