@@ -1,5 +1,6 @@
 package com.example.blps.dao.controller;
 
+import com.example.blps.exception.IllegalContent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,6 +27,11 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
     public ResponseEntity<String> badRequest(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(IllegalContent.class)
+    public ResponseEntity<String> illegalContent(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getLocalizedMessage());
     }
 
