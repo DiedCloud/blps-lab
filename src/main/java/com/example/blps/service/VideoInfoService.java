@@ -24,7 +24,9 @@ public class VideoInfoService {
         }
 
         VideoInfo video = new VideoInfo(title, description, LocalDateTime.now(), user);
-        videoInfoRepository.save(VideoInfoMapper.toVideoInfoRepoEntity(video));
-        return video;
+
+        return VideoInfoMapper.getVideoInfo(
+                videoInfoRepository.save(VideoInfoMapper.toVideoInfoRepoEntity(video))
+        );
     }
 }

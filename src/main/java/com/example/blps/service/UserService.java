@@ -34,7 +34,8 @@ public class UserService implements UserDetailsService {
 
     public User createUser(String login, String password, String name) {
         User user = new User(login, password, name);
-        userRepository.save(UserMapper.toUserRepoEntity(user));
-        return user;
+        return UserMapper.getUser(
+                userRepository.save(UserMapper.toUserRepoEntity(user))
+        );
     }
 }

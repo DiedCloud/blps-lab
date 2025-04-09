@@ -29,7 +29,8 @@ public class CommentService {
 
     public Comment createComment(User author, String text) {
         Comment comment = new Comment(author, text, LocalDateTime.now());
-        commentRepository.save(CommentMapper.toCommentRepoEntity(comment));
-        return comment;
+        return CommentMapper.getComment(
+                commentRepository.save(CommentMapper.toCommentRepoEntity(comment))
+        );
     }
 }
