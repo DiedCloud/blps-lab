@@ -14,4 +14,16 @@ public class VideoInfoMapper {
                 UserMapper.getUser(videoInfo.getAuthor())
         );
     }
+
+    static public com.example.blps.dao.repository.model.VideoInfo toVideoInfoRepoEntity(
+            @NonNull com.example.blps.entity.VideoInfo video
+    ) {
+        com.example.blps.dao.repository.model.VideoInfo v1 = new com.example.blps.dao.repository.model.VideoInfo();
+        if (video.getId() != null) v1.setId(video.getId());
+        v1.setTitle(video.getTitle());
+        v1.setDescription(video.getDescription());
+        v1.setPublished(video.getPublished());
+        v1.setAuthor(UserMapper.toUserRepoEntity(video.getAuthor()));
+        return v1;
+    }
 }
