@@ -53,7 +53,7 @@ public class SecurityConfig {
 
         CorsConfiguration corsConfig = new CorsConfiguration();
 
-        corsConfig.setAllowCredentials(true);
+        // corsConfig.setAllowCredentials(true);
         corsConfig.addAllowedOrigin("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.addAllowedMethod("*");

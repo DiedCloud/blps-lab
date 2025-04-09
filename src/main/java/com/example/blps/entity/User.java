@@ -18,9 +18,9 @@ public class User implements UserDetails {
     @NonNull
     String login;
     @NonNull
-    String name;
-    @NonNull
     String password;
+    @NonNull
+    String name;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

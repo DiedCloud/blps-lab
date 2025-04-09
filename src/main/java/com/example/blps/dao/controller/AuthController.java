@@ -1,5 +1,6 @@
 package com.example.blps.dao.controller;
 
+import com.example.blps.config.SecurityConfig;
 import com.example.blps.dao.controller.model.AuthRequestDTO;
 import com.example.blps.dao.controller.model.AuthResponseDTO;
 import com.example.blps.dao.controller.model.RegisterRequestDTO;
@@ -19,6 +20,7 @@ public class AuthController {
     private final AuthenticationManager manager;
     private final UserService userService;
     private final JWTService jwtService;
+    private final SecurityConfig securityConfig;
 
     @CrossOrigin
     @PostMapping("/login")
@@ -34,7 +36,11 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/registration")
     public ResponseEntity<AuthResponseDTO> registration(@RequestBody final RegisterRequestDTO request) {
-        User user = userService.createUser(request.getLogin(), request.getPassword(), request.getName());
+        User user = userService.createUser(
+                request.getLogin(),
+                securityConfig.passwordEncoder().encode(request.getPassword()),
+                request.getName()
+        );
         final String jwt = jwtService.generateToken(user);
         return ResponseEntity.ok(new AuthResponseDTO(jwt));
     }

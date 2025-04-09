@@ -9,8 +9,8 @@ public class UserMapper {
         return new com.example.blps.entity.User(
                 user.getId(),
                 user.getLogin(),
-                user.getName(),
-                user.getPassword()
+                user.getPassword(),
+                user.getName()
         );
     }
 
