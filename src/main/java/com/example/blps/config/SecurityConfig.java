@@ -69,7 +69,13 @@ public class SecurityConfig {
         http.authorizeHttpRequests((ar) -> {
             ar.requestMatchers(mvc.pattern("/auth/login")).permitAll();
             ar.requestMatchers(mvc.pattern("/auth/registration")).permitAll();
-            ar.requestMatchers(mvc.pattern("/swagger-ui/*")).permitAll();
+            ar.requestMatchers(
+                    mvc.pattern("/swagger-ui/**"),
+                    mvc.pattern("/swagger-ui.html"),
+                    mvc.pattern("/swagger-resources/*"),
+                    mvc.pattern("/v3/api-docs/**")
+            ).permitAll();
+
             // Если будет web socket для отправки ответов, ведь у нас в BMPN нарисовано письмами
             // Открыть все чтобы можно было подключиться, на стадии подписки скидывает через AuthChanellInterceptorAdapter.
             // ar.requestMatchers(mvc.pattern("/socket/**")).permitAll();  TODO ?

@@ -1,27 +1,32 @@
 package com.example.blps.config;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springframework.context.annotation.Bean;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@OpenAPIDefinition(
+        info = @io.swagger.v3.oas.annotations.info.Info(
+                title = "blps lab API",
+                description = "backend приложение, лабораторная работа ИТМО",
+                version = "1.0.0",
+                contact = @Contact(
+                        name = "DiedCloud",
+                        email = "frolovkirill@niuitmo.ru"
+                )
+        ),
+        servers = {
+                @Server(url = "http://localhost:8080", description = "Default Server URL")
+        }
+)
+@SecurityScheme(
+        name = "Bearer Authentication",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
+)
 public class OpenApiConfiguration {
-
-    @Bean
-    public OpenAPI customizeOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
-        return new OpenAPI()
-                .info(new Info().title("Your API Title").version("v1"))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-                .components(new Components()
-                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
-                                .name(securitySchemeName)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
-    }
 }
