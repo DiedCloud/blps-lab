@@ -20,6 +20,8 @@ create table Video_Info
     id          bigserial primary key,
     title       varchar(511) not null,
     description text         not null,
+    storage_key varchar(128) not null,
+    transcription_key varchar(128) not null,
     published   timestamp    not null,
     author_id   bigint       not null,
     status      varchar(32) not null,

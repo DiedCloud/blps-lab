@@ -16,6 +16,10 @@ public class VideoInfo {
     String title;
     @Column(nullable = false)
     String description;
+    @Column(nullable = false, name = "transcription_key")
+    String transcriptionKey;
+    @Column(nullable = false, name = "storage_key")
+    String storageKey;
     @Column(nullable = false)
     LocalDateTime published;
 
