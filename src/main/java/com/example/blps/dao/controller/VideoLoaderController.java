@@ -4,6 +4,7 @@ import com.example.blps.dao.controller.model.VideoDTO;
 import com.example.blps.entity.VideoInfo;
 import com.example.blps.service.UserService;
 import com.example.blps.service.VideoInfoService;
+import io.minio.MinioClient;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class VideoLoaderController {
     VideoInfoService videoService;
     UserService userService;
+    MinioClient minioClient;
 
     @CrossOrigin
     @PostMapping("/new")

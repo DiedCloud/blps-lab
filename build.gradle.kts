@@ -38,6 +38,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("com.assemblyai:assemblyai-java:4.0.1")
+    implementation("io.minio:minio:8.5.1")
 }
 
 tasks.withType<Test> {
