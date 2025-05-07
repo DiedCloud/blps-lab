@@ -31,7 +31,7 @@ public class VideoService {
 
         video.setStatus(MonetizationStatus.PROCESSING);
 
-        String transcription = null;
+        String transcription;
 
         try {
             InputStream stream = minioClient.getObject(
@@ -42,7 +42,7 @@ public class VideoService {
             );
             transcription = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to get transcription", e);
+            throw new NoSuchElementException("Failed to get transcription", e);
         }
 
         boolean compliant = textFilterService.findBannedWords(transcription);
