@@ -8,7 +8,12 @@ import com.example.blps.exception.VideoLoadingError;
 import com.example.blps.service.TranscriptionService;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,12 +24,19 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/video")
 @RequiredArgsConstructor
+@Tag(name = "Video Upload", description = "Operations for uploading videos")
 public class VideoLoaderController {
     private final VideoInfoRepository videoRepo;
     private final MinioClient minioClient;
     private final TranscriptionService transcriptionService;
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload a new video")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Video uploaded successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "503", description = "Video upload service unavailable")
+    })
     public VideoInfo uploadVideo(@RequestParam("file") MultipartFile file,
                                  @RequestParam("title") String title,
                                  @RequestParam("description") String description,
