@@ -40,6 +40,7 @@ public class ResponseDTOs {
         private UserResponseDTO author;
         private String content;
         private LocalDateTime published;
+        private Long videoId;
     }
 
     @Data

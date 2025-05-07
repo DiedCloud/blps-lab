@@ -1,5 +1,6 @@
-package com.example.blps.dao.controller.model;
+package com.example.blps.dao.controller.mapper;
 
+import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.model.Appeal;
 import com.example.blps.dao.repository.model.Comment;
 import com.example.blps.dao.repository.model.MonetizationInfo;
@@ -72,6 +73,7 @@ public class DTOMapper {
                 .content(comment.getContent())
                 .published(comment.getPublished())
                 .author(toUserDTO(comment.getAuthor()))
+                .videoId(comment.getVideo().getId())
                 .build();
     }
 

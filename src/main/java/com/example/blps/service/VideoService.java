@@ -1,13 +1,14 @@
 package com.example.blps.service;
 
 import com.example.blps.dao.repository.VideoInfoRepository;
+import com.example.blps.dao.repository.mapper.VideoInfoMapper;
 import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
+import com.example.blps.entity.User;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.example.blps.entity.User;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -66,6 +67,12 @@ public class VideoService {
 
         video.setStatus(approved ? MonetizationStatus.MONETIZED : MonetizationStatus.REJECTED);
         return videoRepo.save(video);
+    }
+
+    public com.example.blps.entity.VideoInfo getVideoById(Long videoId) {
+        VideoInfo video = videoRepo.findById(videoId)
+                .orElseThrow(() -> new NoSuchElementException("Video not found"));
+        return VideoInfoMapper.getVideoInfo(video);
     }
 }
 

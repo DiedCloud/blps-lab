@@ -20,4 +20,8 @@ public class Comment {
     String content;
     @Column(nullable = false)
     LocalDateTime published;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id", nullable = false)
+    VideoInfo video;
 }

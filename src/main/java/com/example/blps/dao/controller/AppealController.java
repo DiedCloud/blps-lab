@@ -1,7 +1,7 @@
 package com.example.blps.dao.controller;
 
+import com.example.blps.dao.controller.mapper.DTOMapper;
 import com.example.blps.dao.controller.model.AppealRequestDTO;
-import com.example.blps.dao.controller.model.DTOMapper;
 import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.entity.User;
 import com.example.blps.service.AppealService;
@@ -38,7 +38,7 @@ public class AppealController {
             @AuthenticationPrincipal User principal) {
 
         var appeal = appealService.submitAppeal(req.videoId(), req.reason(), principal);
-        var appealDTO = DTOMapper.toAppealDTO(appeal);
+        ResponseDTOs.AppealResponseDTO appealDTO = DTOMapper.toAppealDTO(appeal);
 
         return ResponseEntity.ok(
                 ResponseDTOs.ApiResponse.success(appealDTO, "Appeal submitted successfully")

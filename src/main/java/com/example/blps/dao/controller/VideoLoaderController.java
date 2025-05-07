@@ -1,6 +1,6 @@
 package com.example.blps.dao.controller;
 
-import com.example.blps.dao.controller.model.DTOMapper;
+import com.example.blps.dao.controller.mapper.DTOMapper;
 import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.mapper.VideoInfoMapper;
@@ -17,7 +17,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
