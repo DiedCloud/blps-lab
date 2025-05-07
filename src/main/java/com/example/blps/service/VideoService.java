@@ -42,6 +42,8 @@ public class VideoService {
             );
             transcription = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
+            video.setStatus(MonetizationStatus.REJECTED);
+            videoRepo.save(video);
             throw new NoSuchElementException("Failed to get transcription", e);
         }
 
