@@ -1,29 +1,19 @@
 package com.example.blps.dao.controller;
 
-import com.example.blps.dao.controller.model.VideoDTO;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.mapper.VideoInfoMapper;
-import com.example.blps.entity.MonetizationInfo;
 import com.example.blps.entity.User;
 import com.example.blps.entity.VideoInfo;
 import com.example.blps.exception.VideoLoadingError;
 import com.example.blps.service.TranscriptionService;
-import com.example.blps.service.UserService;
-import com.example.blps.service.VideoInfoService;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController

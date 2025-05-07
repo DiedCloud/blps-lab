@@ -3,10 +3,14 @@ package com.example.blps.service;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.blps.entity.User;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
 
@@ -14,6 +18,8 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class VideoService {
     private final VideoInfoRepository videoRepo;
+    private final MinioClient minioClient;
+    private final TextFilterService textFilterService;
 
     public VideoInfo requestMonetization(Long videoId, User user) throws AccessDeniedException {
         VideoInfo video = videoRepo.findById(videoId)
@@ -24,7 +30,21 @@ public class VideoService {
 
         video.setStatus(MonetizationStatus.PROCESSING);
 
-        boolean compliant = !video.getDescription().toLowerCase().contains("violence");
+        String transcription = null;
+
+        try {
+            InputStream stream = minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket("transcriptions")
+                            .object(video.getTranscriptionKey())
+                            .build()
+            );
+            transcription = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get transcription", e);
+        }
+
+        boolean compliant = textFilterService.findBannedWords(transcription);
 
         if (compliant) {
             video.setStatus(MonetizationStatus.MONETIZED);
