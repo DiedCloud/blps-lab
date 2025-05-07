@@ -18,4 +18,6 @@ public class Comment {
     String content;
     @NonNull
     LocalDateTime published;
+    @NonNull
+    VideoInfo video;
 }

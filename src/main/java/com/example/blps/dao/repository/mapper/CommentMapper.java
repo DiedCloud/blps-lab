@@ -10,7 +10,8 @@ public class CommentMapper {
                 comment.getId(),
                 UserMapper.getUser(comment.getAuthor()),
                 comment.getContent(),
-                comment.getPublished()
+                comment.getPublished(),
+                VideoInfoMapper.getVideoInfo(comment.getVideo())
         );
     }
 
@@ -22,6 +23,7 @@ public class CommentMapper {
         c1.setAuthor(UserMapper.toUserRepoEntity(comment.getAuthor()));
         c1.setContent(comment.getContent());
         c1.setPublished(comment.getPublished());
+        c1.setVideo(VideoInfoMapper.toVideoInfoRepoEntity(comment.getVideo()));
         return c1;
     }
 }
