@@ -24,14 +24,11 @@ public class ResponseDTOs {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class VideoInfoResponseDTO {
-        private Long id;
         private String title;
         private String description;
-        private String transcriptionKey;
         private String storageKey;
-        private LocalDateTime published;
         private String status;
-        private UserResponseDTO author;
+        private String username;
     }
 
     @Data

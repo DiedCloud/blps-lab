@@ -1,9 +1,9 @@
 package com.example.blps.dao.controller;
 
+import com.example.blps.dao.controller.model.DTOMapper;
 import com.example.blps.dao.controller.model.ModerationRequestDTO;
 import com.example.blps.dao.controller.model.MonetizationRequestDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
-import com.example.blps.dto.mapper.DTOMapper;
 import com.example.blps.entity.User;
 import com.example.blps.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;

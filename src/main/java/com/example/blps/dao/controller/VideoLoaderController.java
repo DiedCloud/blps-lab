@@ -1,5 +1,7 @@
 package com.example.blps.dao.controller;
 
+import com.example.blps.dao.controller.model.DTOMapper;
+import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.mapper.VideoInfoMapper;
 import com.example.blps.entity.User;
@@ -37,10 +39,10 @@ public class VideoLoaderController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "503", description = "Video upload service unavailable")
     })
-    public VideoInfo uploadVideo(@RequestParam("file") MultipartFile file,
-                                 @RequestParam("title") String title,
-                                 @RequestParam("description") String description,
-                                 @AuthenticationPrincipal User principal) {
+    public ResponseDTOs.VideoInfoResponseDTO uploadVideo(@RequestParam("file") MultipartFile file,
+                                                         @RequestParam("title") String title,
+                                                         @RequestParam("description") String description,
+                                                         @AuthenticationPrincipal User principal) {
 
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Please select a file to upload");
@@ -64,7 +66,7 @@ public class VideoLoaderController {
 
             transcriptionService.transcribeVideo(video);
 
-            return video;
+            return DTOMapper.toVideoInfoDTO(video);
         } catch (Exception e) {
             throw new VideoLoadingError("Failed to upload video: " + e.getMessage());
         }

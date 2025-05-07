@@ -32,9 +32,21 @@ public class TranscriptionService {
     @Value("${assemblyai.api.key}")
     private String assemblyAiApiKey;
 
+    @Value("${assemblyai.mock_requests}")
+    private Boolean needToMockRequest;
+
     @Async
     public void transcribeVideo(VideoInfo video) {
         try {
+            if (needToMockRequest) {
+                String transcriptionText = "Mocked video transcription";
+                String transcriptionKey = saveTranscription(transcriptionText);
+
+                video.setTranscriptionKey(transcriptionKey);
+                videoRepo.save(VideoInfoMapper.toVideoInfoRepoEntity(video));
+                return;
+            }
+
             InputStream videoStream = minioClient.getObject(
                     GetObjectArgs.builder()
                             .bucket("videos")

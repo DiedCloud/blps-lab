@@ -1,6 +1,5 @@
-package com.example.blps.dto.mapper;
+package com.example.blps.dao.controller.model;
 
-import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.model.Appeal;
 import com.example.blps.dao.repository.model.Comment;
 import com.example.blps.dao.repository.model.MonetizationInfo;
@@ -36,14 +35,11 @@ public class DTOMapper {
         if (video == null) return null;
 
         return ResponseDTOs.VideoInfoResponseDTO.builder()
-                .id(video.getId())
                 .title(video.getTitle())
                 .description(video.getDescription())
-                .transcriptionKey(video.getTranscriptionKey())
                 .storageKey(video.getStorageKey())
-                .published(video.getPublished())
+                .username(video.getAuthor().getLogin())
                 .status(video.getStatus() != null ? video.getStatus().name() : null)
-                .author(toUserDTO(video.getAuthor()))
                 .build();
     }
 
@@ -51,13 +47,9 @@ public class DTOMapper {
         if (video == null) return null;
 
         return ResponseDTOs.VideoInfoResponseDTO.builder()
-                .id(video.getId())
                 .title(video.getTitle())
                 .description(video.getDescription())
-                .transcriptionKey(video.getTranscriptionKey())
                 .storageKey(video.getStorageKey())
-                .published(video.getPublished())
-                .author(toUserDTO(video.getAuthor()))
                 .build();
     }
 

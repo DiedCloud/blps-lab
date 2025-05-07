@@ -1,8 +1,8 @@
 package com.example.blps.dao.controller;
 
+import com.example.blps.dao.controller.model.DTOMapper;
 import com.example.blps.dao.controller.model.NewCommentDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
-import com.example.blps.dto.mapper.DTOMapper;
 import com.example.blps.entity.User;
 import com.example.blps.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
