@@ -17,6 +17,10 @@ public class VideoInfo {
     @NonNull
     String description;
     @NonNull
+    String transcriptionKey;
+    @NonNull
+    String storageKey;
+    @NonNull
     LocalDateTime published;
     @NonNull
     User author;

@@ -47,10 +47,17 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(ex.getStatusCode()).body(ex.getLocalizedMessage());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> illegalStateException(IllegalStateException ex) {
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getLocalizedMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> generalException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Something went wrong on server side: " + ex.getLocalizedMessage());
     }
+
+
 }

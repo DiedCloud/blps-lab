@@ -23,7 +23,7 @@ public class VideoInfoService {
             throw new VideoLoadingError("Video storage unavailable");
         }
 
-        VideoInfo video = new VideoInfo(title, description, LocalDateTime.now(), user);
+        VideoInfo video = new VideoInfo(title, description, "", "", LocalDateTime.now(), user);
 
         return VideoInfoMapper.getVideoInfo(
                 videoInfoRepository.save(VideoInfoMapper.toVideoInfoRepoEntity(video))
