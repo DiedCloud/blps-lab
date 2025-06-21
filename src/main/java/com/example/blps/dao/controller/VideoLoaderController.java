@@ -3,9 +3,8 @@ package com.example.blps.dao.controller;
 import com.example.blps.dao.controller.mapper.DTOMapper;
 import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.VideoInfoRepository;
-import com.example.blps.dao.repository.mapper.VideoInfoMapper;
-import com.example.blps.entity.User;
-import com.example.blps.entity.VideoInfo;
+import com.example.blps.dao.repository.model.User;
+import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.exception.VideoLoadingError;
 import com.example.blps.service.TranscriptionService;
 import io.minio.MinioClient;
@@ -63,9 +62,15 @@ public class VideoLoaderController {
                             .build()
             );
 
-            VideoInfo video = new VideoInfo(title, description, "", storageKey, LocalDateTime.now(), principal);
+            VideoInfo video = new VideoInfo();
+            video.setTitle(title);
+            video.setDescription(description);
+            video.setTranscriptionKey("");
+            video.setStorageKey(storageKey);
+            video.setPublished(LocalDateTime.now());
+            video.setAuthor(principal);
 
-            videoRepo.save(VideoInfoMapper.toVideoInfoRepoEntity(video));
+            videoRepo.save(video);
 
             transcriptionService.transcribeVideo(video);
 

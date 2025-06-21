@@ -1,10 +1,9 @@
 package com.example.blps.service;
 
 import com.example.blps.dao.repository.CommentRepository;
-import com.example.blps.dao.repository.mapper.CommentMapper;
-import com.example.blps.entity.Comment;
-import com.example.blps.entity.User;
-import com.example.blps.entity.VideoInfo;
+import com.example.blps.dao.repository.model.Comment;
+import com.example.blps.dao.repository.model.User;
+import com.example.blps.dao.repository.model.VideoInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +26,12 @@ public class CommentService {
     }
 
     public Comment createComment(User author, VideoInfo video, String text) {
-        Comment comment = new Comment(author, text, LocalDateTime.now(), video);
-        return CommentMapper.getComment(
-                commentRepository.save(CommentMapper.toCommentRepoEntity(comment))
-        );
+        Comment comment = new Comment();
+        comment.setAuthor(author);
+        comment.setVideo(video);
+        comment.setContent(text);
+        comment.setPublished(LocalDateTime.now());
+        commentRepository.save(comment);
+        return comment;
     }
 }

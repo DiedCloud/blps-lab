@@ -1,6 +1,6 @@
 package com.example.blps.service;
 
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.userdetails.UserDetails;

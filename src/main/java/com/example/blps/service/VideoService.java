@@ -1,10 +1,9 @@
 package com.example.blps.service;
 
 import com.example.blps.dao.repository.VideoInfoRepository;
-import com.example.blps.dao.repository.mapper.VideoInfoMapper;
 import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +70,9 @@ public class VideoService {
         return videoRepo.save(video);
     }
 
-    public com.example.blps.entity.VideoInfo getVideoById(Long videoId) {
-        VideoInfo video = videoRepo.findById(videoId)
+    public VideoInfo getVideoById(Long videoId) {
+        return videoRepo.findById(videoId)
                 .orElseThrow(() -> new NoSuchElementException("Video not found"));
-        return VideoInfoMapper.getVideoInfo(video);
     }
 }
 

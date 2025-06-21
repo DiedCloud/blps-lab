@@ -5,7 +5,7 @@ import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.Appeal;
 import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

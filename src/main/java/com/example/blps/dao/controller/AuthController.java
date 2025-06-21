@@ -5,7 +5,7 @@ import com.example.blps.dao.controller.model.AuthRequestDTO;
 import com.example.blps.dao.controller.model.AuthResponseDTO;
 import com.example.blps.dao.controller.model.RegisterRequestDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import com.example.blps.service.JWTService;
 import com.example.blps.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;

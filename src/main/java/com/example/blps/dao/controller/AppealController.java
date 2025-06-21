@@ -3,7 +3,7 @@ package com.example.blps.dao.controller;
 import com.example.blps.dao.controller.mapper.DTOMapper;
 import com.example.blps.dao.controller.model.AppealRequestDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import com.example.blps.service.AppealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

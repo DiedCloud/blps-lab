@@ -4,8 +4,7 @@ import com.assemblyai.api.AssemblyAI;
 import com.assemblyai.api.resources.transcripts.types.Transcript;
 import com.assemblyai.api.resources.transcripts.types.TranscriptStatus;
 import com.example.blps.dao.repository.VideoInfoRepository;
-import com.example.blps.dao.repository.mapper.VideoInfoMapper;
-import com.example.blps.entity.VideoInfo;
+import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.exception.VideoLoadingError;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -43,7 +42,7 @@ public class TranscriptionService {
                 String transcriptionKey = saveTranscription(transcriptionText);
 
                 video.setTranscriptionKey(transcriptionKey);
-                videoRepo.save(VideoInfoMapper.toVideoInfoRepoEntity(video));
+                videoRepo.save(video);
                 return;
             }
 
@@ -87,7 +86,7 @@ public class TranscriptionService {
                 String transcriptionKey = saveTranscription(transcriptionText);
 
                 video.setTranscriptionKey(transcriptionKey);
-                videoRepo.save(VideoInfoMapper.toVideoInfoRepoEntity(video));
+                videoRepo.save(video);
             } else {
                 log.error("Transcription failed with status: {}", transcript.getStatus());
             }
