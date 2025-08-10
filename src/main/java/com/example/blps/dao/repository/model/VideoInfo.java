@@ -2,6 +2,8 @@ package com.example.blps.dao.repository.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +27,9 @@ public class VideoInfo {
     LocalDateTime published;
 
     @Enumerated(EnumType.STRING)
-    private MonetizationStatus status;
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false)
+    private MonetizationStatus status = MonetizationStatus.PROCESSING;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)

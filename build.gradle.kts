@@ -37,6 +37,9 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
 
+    // hibernate validation
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+
     // S3 file storage - MinIO
     implementation("io.minio:minio:8.5.1")
 
