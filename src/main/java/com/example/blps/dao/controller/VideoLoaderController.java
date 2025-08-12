@@ -7,9 +7,8 @@ import com.example.blps.dao.repository.model.User;
 import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.dao.xaresources.MinioEnlister;
 import com.example.blps.dao.xaresources.MinioXAResource;
-import com.example.blps.dao.xaresources.MinioXATransactionalResource;
+import com.example.blps.event.SpringEventTranscriptionRequestPublisher;
 import com.example.blps.exception.VideoLoadingError;
-import com.example.blps.service.TranscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,9 +33,9 @@ import java.time.LocalDateTime;
 @Slf4j
 public class VideoLoaderController {
     private final VideoInfoRepository videoRepo;
-    private final TranscriptionService transcriptionService;
 
     private final MinioEnlister minioEnlister;
+    private final SpringEventTranscriptionRequestPublisher videoTranscriptionRequestPublisher;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload a new video")
@@ -74,7 +73,7 @@ public class VideoLoaderController {
             video.setStorageKey(storageKey);
             videoRepo.save(video);
 
-            // transcriptionService.transcribeVideo(video);
+            videoTranscriptionRequestPublisher.publish(video.getId());
 
             return DTOMapper.toVideoInfoDTO(video);
         } catch (Exception e) {
