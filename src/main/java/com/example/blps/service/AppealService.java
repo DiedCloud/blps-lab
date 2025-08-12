@@ -9,6 +9,7 @@ import com.example.blps.dao.repository.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
@@ -18,6 +19,7 @@ public class AppealService {
     private final AppealRepository appealRepo;
     private final VideoInfoRepository videoRepo;
 
+    @Transactional
     public Appeal submitAppeal(Long videoId, String reason, User user) {
         VideoInfo video = videoRepo.findById(videoId)
                 .orElseThrow(() -> new NoSuchElementException("Video not found"));

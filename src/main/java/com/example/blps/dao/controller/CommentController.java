@@ -6,6 +6,7 @@ import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.model.User;
 import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.service.CommentService;
+import com.example.blps.service.TextFilterService;
 import com.example.blps.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Comments", description = "Operations for managing comments")
 public class CommentController {
     private final CommentService commentService;
+    private final TextFilterService textFilterService;
     private final VideoService videoService;
 
     @PostMapping("/new")
@@ -39,7 +41,7 @@ public class CommentController {
             @AuthenticationPrincipal User principal) {
         VideoInfo video = videoService.getVideoById(request.getVideoId());
 
-        if (!commentService.validateComment(request.getText())) {
+        if (textFilterService.containsBannedWord(request.getText())) {
             return ResponseEntity.badRequest().body(
                     ResponseDTOs.ApiResponse.error("Comment contains banned pattern")
             );

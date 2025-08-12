@@ -46,7 +46,7 @@ public class VideoService {
             throw new NoSuchElementException("Failed to get transcription", e);
         }
 
-        boolean compliant = textFilterService.findBannedWords(transcription);
+        boolean compliant = textFilterService.containsBannedWord(transcription);
 
         if (compliant) {
             video.setStatus(MonetizationStatus.MONETIZED);

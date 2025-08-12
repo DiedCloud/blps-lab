@@ -5,6 +5,7 @@ import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.User;
 import com.example.blps.dao.repository.model.VideoInfo;
+import com.example.blps.dao.xaresources.MinioEnlister;
 import com.example.blps.dao.xaresources.MinioXAResource;
 import com.example.blps.dao.xaresources.MinioXATransactionalResource;
 import com.example.blps.exception.VideoLoadingError;
@@ -13,16 +14,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.RollbackException;
-import jakarta.transaction.SystemException;
-import jakarta.transaction.Transaction;
-import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,8 +36,7 @@ public class VideoLoaderController {
     private final VideoInfoRepository videoRepo;
     private final TranscriptionService transcriptionService;
 
-    private final JtaTransactionManager transactionManager;
-    private final MinioXATransactionalResource minioTxResource;
+    private final MinioEnlister minioEnlister;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload a new video")
@@ -61,18 +56,7 @@ public class VideoLoaderController {
         }
 
         // Registration of MinioXAResource in current transaction
-        MinioXAResource minioXa;
-        try {
-            TransactionManager tm = transactionManager.getTransactionManager();
-            if (tm == null) { throw new SystemException("Transaction manager not available"); }
-            Transaction t = tm.getTransaction();
-            if (t == null) { throw new SystemException("Transaction is not active"); }
-            minioXa = (MinioXAResource) minioTxResource.getXAResource(); // <- отсюда берём XAResource
-            t.enlistResource(minioXa);
-        } catch (RollbackException | SystemException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+        MinioXAResource minioXa = minioEnlister.enlistMinioXAResource();
 
         try {
             VideoInfo video = new VideoInfo();

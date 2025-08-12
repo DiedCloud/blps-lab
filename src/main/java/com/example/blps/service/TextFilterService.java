@@ -31,7 +31,7 @@ public class TextFilterService {
         }
     }
 
-    public Boolean findBannedWords(String text) {
+    public Boolean containsBannedWord(String text) {
         String normalizedText = text.toLowerCase();
 
         for (String phrase : bannedPhrases) {
