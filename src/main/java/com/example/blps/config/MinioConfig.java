@@ -1,7 +1,7 @@
 package com.example.blps.config;
 
 import com.atomikos.icatch.config.UserTransactionServiceImp;
-import com.example.blps.dao.xaresources.MinioXATransactionalResource;
+import com.example.blps.infra.minio.xaresources.MinioXATransactionalResource;
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

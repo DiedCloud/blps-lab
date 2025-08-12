@@ -1,4 +1,4 @@
-package com.example.blps.dao.xaresources;
+package com.example.blps.infra.minio.xaresources;
 
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.xa.XATransactionalResource;

@@ -1,5 +1,7 @@
-package com.example.blps.event;
+package com.example.blps.infra.messaging;
 
+import com.example.blps.application.event.VideoUploadedEvent;
+import com.example.blps.application.port.out.RequestPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

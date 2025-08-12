@@ -1,4 +1,4 @@
-package com.example.blps.dao.xaresources;
+package com.example.blps.infra.minio.xaresources;
 
 import io.minio.MinioClient;
 import io.minio.ObjectWriteResponse;

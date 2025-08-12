@@ -1,5 +1,6 @@
-package com.example.blps.event;
+package com.example.blps.eventlistener;
 
+import com.example.blps.application.event.VideoUploadedEvent;
 import com.example.blps.service.TranscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

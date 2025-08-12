@@ -1,4 +1,4 @@
-package com.example.blps.service;
+package com.example.blps.infra.assemblyai;
 
 import com.assemblyai.api.AssemblyAI;
 import com.assemblyai.api.resources.transcripts.types.Transcript;
@@ -24,7 +24,7 @@ public class AiTranscriptionClient {
     private String assemblyAiApiKey;
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    Transcript getAiTranscription(String storageKey) {
+    public Transcript getAiTranscription(String storageKey) {
         try {
             InputStream videoStream = minioClient.getObject(
                     GetObjectArgs.builder()
