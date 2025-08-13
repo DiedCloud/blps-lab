@@ -7,7 +7,6 @@ import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.infra.assemblyai.AiTranscriptionClient;
 import com.example.blps.infra.minio.xaresources.MinioEnlister;
 import com.example.blps.infra.minio.xaresources.MinioXAResource;
-import com.example.blps.exception.VideoLoadingError;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
@@ -35,23 +34,25 @@ public class TranscriptionService {
 
     @Value("${assemblyai.mock_requests}")
     private Boolean needToMockRequest;
+    @Value("${minio.buckets.transcriptions}")
+    private String transcriptionsBucket;
 
     @Async("transcribeExecutor")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CompletableFuture<Void> transcribeVideoById(Long videoId) {
-        // Registration of MinioXAResource in current transaction
-        MinioXAResource minioXa = minioEnlister.enlistMinioXAResource();
-
-        VideoInfo video = videoRepo.findById(videoId)
-                .orElseThrow(() -> new IllegalStateException("Video not found: " + videoId));
-
-        // Идемпотентность: если уже есть ключ — пропускаем todo а надо ли в целом?
-        if (video.getTranscriptionKey() != null && !video.getTranscriptionKey().isBlank()) {
-            log.info("Video {} already has transcription key {}, skipping", videoId, video.getTranscriptionKey());
-            return CompletableFuture.completedFuture(null);
-        }
-
         try {
+            // Registration of MinioXAResource in current transaction
+            MinioXAResource minioXa = minioEnlister.enlistMinioXAResource();
+
+            VideoInfo video = videoRepo.findById(videoId)
+                    .orElseThrow(() -> new IllegalStateException("Video not found: " + videoId));
+
+            // Идемпотентность: если уже есть ключ — пропускаем todo а надо ли в целом?
+            if (video.getTranscriptionKey() != null && !video.getTranscriptionKey().isBlank()) {
+                log.info("Video {} already has transcription key {}, skipping", videoId, video.getTranscriptionKey());
+                return CompletableFuture.completedFuture(null);
+            }
+
             if (needToMockRequest) {
                 String transcriptionKey = saveTranscription(
                         video.getId(),
@@ -78,10 +79,14 @@ public class TranscriptionService {
             video.setTranscriptionKey(transcriptionKey);
             videoRepo.save(video);
 
+            return CompletableFuture.completedFuture(null);
+
         } catch (Exception e) {
-            throw new VideoLoadingError("Failed to load video: " + e.getMessage());
+            log.error("Transcription failed for videoId={}", videoId, e);
+            CompletableFuture<Void> failed = new CompletableFuture<>();
+            failed.completeExceptionally(e);
+            return failed;
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)  // mandatory, так как работает через XA ресурс
@@ -89,7 +94,7 @@ public class TranscriptionService {
         String storageKey = "video_" + videoId + "_transcription.txt";
         byte[] bytes = transcription.getBytes(StandardCharsets.UTF_8);
         minioXa.uploadFile(
-                "transcriptions",
+                transcriptionsBucket,
                 storageKey,
                 new ByteArrayInputStream(bytes),
                 bytes.length

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,9 @@ public class VideoLoaderController {
 
     private final MinioEnlister minioEnlister;
     private final SpringEventTranscriptionRequestPublisher videoTranscriptionRequestPublisher;
+
+    @Value("${minio.buckets.videos}")
+    private String videosBucket;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload a new video")
@@ -68,7 +72,7 @@ public class VideoLoaderController {
             videoRepo.save(video);
 
             String storageKey = "video_" + video.getId() + "_user_" + principal.getLogin() + "_" + file.getOriginalFilename();
-            minioXa.uploadFile("videos", storageKey, file.getInputStream(), file.getSize());
+            minioXa.uploadFile(videosBucket, storageKey, file.getInputStream(), file.getSize());
 
             video.setStorageKey(storageKey);
             videoRepo.save(video);
