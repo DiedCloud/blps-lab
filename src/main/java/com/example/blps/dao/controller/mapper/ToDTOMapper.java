@@ -10,7 +10,7 @@ import com.example.blps.dao.repository.model.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DTOMapper {
+public class ToDTOMapper {
 
     public static ResponseDTOs.UserResponseDTO toUserDTO(User user) {
         if (user == null) return null;
@@ -71,7 +71,7 @@ public class DTOMapper {
         if (comments == null) return null;
 
         return comments.stream()
-                .map(DTOMapper::toCommentDTO)
+                .map(ToDTOMapper::toCommentDTO)
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +79,7 @@ public class DTOMapper {
         if (videos == null) return null;
 
         return videos.stream()
-                .map(DTOMapper::toVideoInfoDTO)
+                .map(ToDTOMapper::toVideoInfoDTO)
                 .collect(Collectors.toList());
     }
 }

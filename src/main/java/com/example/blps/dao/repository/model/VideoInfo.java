@@ -1,16 +1,18 @@
 package com.example.blps.dao.repository.model;
 
+import com.example.blps.dao.OwnedObject;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Data
-public class VideoInfo {
+public class VideoInfo implements Serializable, OwnedObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -37,4 +39,9 @@ public class VideoInfo {
 
     @OneToMany(mappedBy = "video", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments;
+
+    @Override
+    public User getOwner() {
+        return author;
+    }
 }

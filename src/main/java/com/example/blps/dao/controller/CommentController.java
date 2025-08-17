@@ -1,6 +1,6 @@
 package com.example.blps.dao.controller;
 
-import com.example.blps.dao.controller.mapper.DTOMapper;
+import com.example.blps.dao.controller.mapper.ToDTOMapper;
 import com.example.blps.dao.controller.model.NewCommentDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.model.User;
@@ -16,13 +16,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("video/{videoId}/comment")
 @RequiredArgsConstructor
 @Tag(name = "Comments", description = "Operations for managing comments")
 public class CommentController {
@@ -37,18 +34,21 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "Comment contains banned pattern")
     })
     public ResponseEntity<ResponseDTOs.ApiResponse<ResponseDTOs.CommentResponseDTO>> createComment(
+            @PathVariable Long videoId,
             @Valid @RequestBody NewCommentDTO request,
-            @AuthenticationPrincipal User principal) {
-        VideoInfo video = videoService.getVideoById(request.getVideoId());
+            @AuthenticationPrincipal User principal
+    ) {
 
-        if (textFilterService.containsBannedWord(request.getText())) {
+        VideoInfo video = videoService.getVideoById(videoId);
+
+        if (textFilterService.containsBannedWord(request.text())) {
             return ResponseEntity.badRequest().body(
                     ResponseDTOs.ApiResponse.error("Comment contains banned pattern")
             );
         }
 
-        var comment = commentService.createComment(principal, video, request.getText());
-        var commentDTO = DTOMapper.toCommentDTO(comment);
+        var comment = commentService.createComment(principal, video, request.text());
+        var commentDTO = ToDTOMapper.toCommentDTO(comment);
 
         return ResponseEntity.ok(
                 ResponseDTOs.ApiResponse.success(commentDTO, "Comment created successfully")

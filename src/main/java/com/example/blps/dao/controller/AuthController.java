@@ -38,7 +38,8 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Authentication failed")
     })
     public ResponseEntity<ResponseDTOs.ApiResponse<AuthResponseDTO>> login(
-            @Valid @RequestBody final AuthRequestDTO request) {
+            @Valid @RequestBody final AuthRequestDTO request
+    ) {
 
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -69,7 +70,8 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Registration failed")
     })
     public ResponseEntity<ResponseDTOs.ApiResponse<AuthResponseDTO>> registration(
-            @Valid @RequestBody final RegisterRequestDTO request) {
+            @Valid @RequestBody final RegisterRequestDTO request
+    ) {
 
         User user = userService.createUser(
                 request.getLogin(),
