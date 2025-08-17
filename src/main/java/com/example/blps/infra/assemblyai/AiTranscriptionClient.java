@@ -37,7 +37,7 @@ public class AiTranscriptionClient {
                     .apiKey(assemblyAiApiKey)
                     .build();
 
-            Transcript transcript = client.transcripts().transcribe(videoStream);
+            Transcript transcript = client.transcripts().transcribe(videoStream);  // FIXME
 
             int attempts = 0;
             while (transcript.getStatus() == TranscriptStatus.QUEUED ||

@@ -1,6 +1,6 @@
 package com.example.blps.dao.controller;
 
-import com.example.blps.config.SecurityConfig;
+import com.example.blps.config.security.SecurityConfig;
 import com.example.blps.dao.controller.model.AuthRequestDTO;
 import com.example.blps.dao.controller.model.AuthResponseDTO;
 import com.example.blps.dao.controller.model.RegisterRequestDTO;

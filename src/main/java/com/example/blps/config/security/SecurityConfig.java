@@ -1,26 +1,31 @@
-package com.example.blps.config;
+package com.example.blps.config.security;
 
-import com.example.blps.config.filter.JWTFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -28,42 +33,30 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EqualsAndHashCode
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JWTFilter jwtFilter;
     private final MvcRequestMatcher.Builder mvc;
+    private final PermissionEvaluatorImpl permissionEvaluatorImpl;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable);
-
-        http.exceptionHandling(eh ->
-                eh.authenticationEntryPoint((rq, rs, ex) ->
-                        rs.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getLocalizedMessage())
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-        );
+                .exceptionHandling(eh ->
+                        eh.authenticationEntryPoint((rq, rs, ex) ->
+                                rs.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+                        )
+                )
+                .headers(headersConfigurer ->
+                        headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                );
 
-        http.csrf(csrf ->
-                csrf.ignoringRequestMatchers("/**")
-        );
-        http.headers(headersConfigurer ->
-                headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-        );
-
-        CorsConfiguration corsConfig = new CorsConfiguration();
-
-        // corsConfig.setAllowCredentials(true);
-        corsConfig.addAllowedOrigin("*");
-        corsConfig.addAllowedHeader("*");
-        corsConfig.addAllowedMethod("*");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
-
-        CorsFilter filter = new CorsFilter(source);
-
-        http.addFilter(filter);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests((ar) -> {
@@ -71,27 +64,23 @@ public class SecurityConfig {
             ar.requestMatchers(mvc.pattern("/auth/registration")).permitAll();
             ar.requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll();
             ar.requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll();
-            // Если будет web socket для отправки ответов, ведь у нас в BMPN нарисовано письмами
-            // Открыть все чтобы можно было подключиться, на стадии подписки скидывает через AuthChanellInterceptorAdapter.
-            // ar.requestMatchers(mvc.pattern("/socket/**")).permitAll();  TODO ?
             ar.anyRequest().authenticated();
         }).httpBasic(withDefaults());
 
         return http.build();
     }
 
-// Тоже web socket
-//    @Bean
-//    public AuthorizationManager<Message<?>> messageAuthorizationManager() {
-//        MessageMatcherDelegatingAuthorizationManager.Builder messages = new MessageMatcherDelegatingAuthorizationManager.Builder();
-//        messages.simpTypeMatchers(
-//                SimpMessageType.CONNECT,
-//                SimpMessageType.HEARTBEAT,
-//                SimpMessageType.UNSUBSCRIBE,
-//                SimpMessageType.DISCONNECT
-//        ).permitAll().anyMessage().authenticated();
-//        return messages.build();
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(List.of("*"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cfg);
+        return source;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -101,5 +90,12 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public MethodSecurityExpressionHandler createExpressionHandler() {
+        var expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(permissionEvaluatorImpl);
+        return expressionHandler;
     }
 }

@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Data
@@ -28,11 +28,18 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<VideoInfo> videos;
 
-
+    @OneToMany(mappedBy = "user", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    List<UserRoles> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Set<GrantedAuthority> auth = new HashSet<>();
+        this.getRoles().forEach(r -> auth.add(new SimpleGrantedAuthority("ROLE_" + r.role.getName())));
+        this.getRoles().stream()
+                .flatMap(r -> r.role.getPermissions().stream())
+                .map(RolePermissions::getPermission)
+                .forEach(p -> auth.add(new SimpleGrantedAuthority(p.getName())));
+        return auth;
     }
 
     @Override

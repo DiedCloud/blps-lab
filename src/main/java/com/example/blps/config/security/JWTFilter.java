@@ -1,4 +1,4 @@
-package com.example.blps.config.filter;
+package com.example.blps.config.security;
 
 import com.example.blps.service.JWTService;
 import jakarta.servlet.FilterChain;
