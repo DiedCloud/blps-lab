@@ -74,5 +74,9 @@ public class VideoService {
         return videoRepo.findById(videoId)
                 .orElseThrow(() -> new NoSuchElementException("Video not found"));
     }
+
+    public boolean checkVideoById(Long videoId) {
+        return videoRepo.existsById(videoId);
+    }
 }
 

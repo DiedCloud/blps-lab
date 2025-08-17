@@ -57,6 +57,11 @@ public class MinioXAResource implements XAResource {
         log.debug("Uploaded file '{}', version '{}'", objectKey, response.versionId());
     }
 
+    public void removeFile(String bucket, String objectKey) throws Exception {
+        // TODO
+        throw new RuntimeException("Not implemented");
+    }
+
     @Override
     public void commit(Xid xid, boolean onePhase) {
         uncommittedFiles.remove(xid);

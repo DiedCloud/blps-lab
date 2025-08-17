@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class MonetizationController {
     private final AppealService appealService;
 
     @PostMapping("/monetize/{videoId}")
+    @PreAuthorize("hasPermission(#videoId, 'VideoInfo', 'request_monetization_on_any_video')")
     @Operation(summary = "Request monetization for a video")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Monetization request successful"),
@@ -48,6 +50,7 @@ public class MonetizationController {
     }
 
     @PostMapping("/moderate/{videoId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_MODERATOR', 'ROLE_ADMIN', 'moderate_monetization_request')")
     @Operation(summary = "Moderate a video")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Moderation successful"),
@@ -69,6 +72,7 @@ public class MonetizationController {
     }
 
     @PostMapping("appeal/{videoId}")
+    @PreAuthorize("hasPermission(#videoId, 'VideoInfo', 'appeal_monetization_on_any_video')")
     @Operation(summary = "Submit an appeal for a rejected video")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Appeal submitted successfully"),

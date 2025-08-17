@@ -1,6 +1,7 @@
 package com.example.blps.config.security;
 
 import com.example.blps.dao.OwnedObject;
+import com.example.blps.dao.repository.CommentRepository;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.Permission;
 import com.example.blps.dao.repository.model.User;
@@ -19,9 +20,11 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class PermissionEvaluatorImpl implements PermissionEvaluator {
     private final VideoInfoRepository videoRepo;
+    private final CommentRepository commentRepo;
 
     Map<String, JpaRepository<? extends OwnedObject, Long>> registeredEntityTypes = Map.ofEntries(
-            Map.entry("VideoInfo", videoRepo)
+            Map.entry("VideoInfo", videoRepo),
+            Map.entry("Comment", commentRepo)
     );
 
     @Override
@@ -60,7 +63,7 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
         if (registeredEntityTypes.containsKey(targetType)){
             JpaRepository<? extends OwnedObject, Long> repo = registeredEntityTypes.get(targetType);
             targetDomainObject = repo.findById((Long) targetId)
-                    .orElseThrow(() -> new NoSuchElementException("Video not found"));
+                    .orElseThrow(() -> new NoSuchElementException("Not found"));
         }
 
         return hasPermission(auth, targetDomainObject, permission);
