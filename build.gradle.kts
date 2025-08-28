@@ -47,9 +47,6 @@ dependencies {
     implementation("com.atomikos:transactions-jta:6.0.0:jakarta")
     implementation("com.atomikos:transactions-jdbc:6.0.0:jakarta")
 
-    // AI video transcription generator
-    implementation("com.assemblyai:assemblyai-java:4.0.1")
-
     // jwt related
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
@@ -66,6 +63,9 @@ dependencies {
 
     // open api docs (swagger)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+
+    // whisper-jni
+    implementation("io.github.givimad:whisper-jni:1.7.1")
 }
 
 tasks.withType<Test> {

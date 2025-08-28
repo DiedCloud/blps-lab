@@ -10,6 +10,7 @@ import com.example.blps.infra.minio.xaresources.MinioEnlister;
 import com.example.blps.infra.minio.xaresources.MinioXAResource;
 import com.example.blps.infra.messaging.SpringEventTranscriptionRequestPublisher;
 import com.example.blps.exception.VideoLoadingError;
+import com.example.blps.service.TranscriptionService;
 import com.example.blps.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 @RestController
@@ -39,6 +42,7 @@ public class VideoLoaderController {
 
     private final MinioEnlister minioEnlister;
     private final SpringEventTranscriptionRequestPublisher videoTranscriptionRequestPublisher;
+    private final TranscriptionService transcriptionService;
 
     @Value("${minio.buckets.videos}")
     private String videosBucket;
@@ -77,7 +81,7 @@ public class VideoLoaderController {
             video.setAuthor(principal);
             videoRepo.save(video);
 
-            String storageKey = "video_" + video.getId() + "_user_" + principal.getLogin() + "_" + file.getOriginalFilename();
+            String storageKey = "video_%s_%s".formatted(video.getId(), file.getOriginalFilename());
             minioXa.uploadFile(videosBucket, storageKey, file.getInputStream(), file.getSize());
 
             video.setStorageKey(storageKey);

@@ -5,8 +5,8 @@ import com.example.blps.dao.controller.model.NewCommentDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.repository.model.User;
 import com.example.blps.dao.repository.model.VideoInfo;
+import com.example.blps.infra.transcription.ProfanityFilter;
 import com.example.blps.service.CommentService;
-import com.example.blps.service.TextFilterService;
 import com.example.blps.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 @Tag(name = "Comments", description = "Operations for managing comments")
 public class CommentController {
     private final CommentService commentService;
-    private final TextFilterService textFilterService;
+    private final ProfanityFilter textFilterService;
     private final VideoService videoService;
 
     @PostMapping
@@ -44,7 +44,7 @@ public class CommentController {
 
         VideoInfo video = videoService.getVideoById(videoId);
 
-        if (textFilterService.containsBannedWord(request.text())) {
+        if (textFilterService.containsBadWords(request.text())) {
             return ResponseEntity.badRequest().body(
                     ResponseDTOs.ApiResponse.error("Comment contains banned pattern")
             );
@@ -73,7 +73,7 @@ public class CommentController {
 
         if (!videoService.checkVideoById(videoId)) throw new NoSuchElementException("Video not found");
 
-        if (textFilterService.containsBannedWord(request.text())) {
+        if (textFilterService.containsBadWords(request.text())) {
             return ResponseEntity.badRequest().body(
                     ResponseDTOs.ApiResponse.error("Comment contains banned pattern")
             );

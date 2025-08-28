@@ -1,12 +1,12 @@
 package com.example.blps.service;
 
-import com.assemblyai.api.resources.transcripts.types.Transcript;
-import com.assemblyai.api.resources.transcripts.types.TranscriptStatus;
 import com.example.blps.dao.repository.VideoInfoRepository;
+import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
-import com.example.blps.infra.assemblyai.AiTranscriptionClient;
 import com.example.blps.infra.minio.xaresources.MinioEnlister;
 import com.example.blps.infra.minio.xaresources.MinioXAResource;
+import com.example.blps.infra.transcription.ProfanityFilter;
+import com.example.blps.infra.transcription.WhisperTranscriptionUtils;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,55 +27,43 @@ import java.util.concurrent.CompletableFuture;
 public class TranscriptionService {
     private final MinioClient minioClient;
     private final VideoInfoRepository videoRepo;
-    private final AiTranscriptionClient aiTranscriptionClient;
+    private final WhisperTranscriptionUtils whisper;
+    private final ProfanityFilter filter;
 
     private final MinioEnlister minioEnlister;
 
-    @Value("${assemblyai.mock_requests}")
-    private Boolean needToMockRequest;
     @Value("${minio.buckets.transcriptions}")
     private String transcriptionsBucket;
 
     @Async("transcribeExecutor")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CompletableFuture<Void> transcribeVideoById(Long videoId) {
-        try {
-            // Registration of MinioXAResource in current transaction
-            MinioXAResource minioXa = minioEnlister.enlistMinioXAResource();
 
-            VideoInfo video = videoRepo.findById(videoId)
-                    .orElseThrow(() -> new IllegalStateException("Video not found: " + videoId));
+        // Registration of MinioXAResource in current transaction
+        MinioXAResource minioXa = minioEnlister.enlistMinioXAResource();
 
-            // Идемпотентность: если уже есть ключ — пропускаем todo а надо ли в целом?
-            if (video.getTranscriptionKey() != null && !video.getTranscriptionKey().isBlank()) {
-                log.info("Video {} already has transcription key {}, skipping", videoId, video.getTranscriptionKey());
-                return CompletableFuture.completedFuture(null);
-            }
+        VideoInfo video = videoRepo.findById(videoId)
+                .orElseThrow(() -> new IllegalStateException("Video not found: " + videoId));
 
-            if (needToMockRequest) {
-                String transcriptionKey = saveTranscription(
-                        video.getId(),
-                        "Mocked video transcription",
-                        minioXa
-                );
-                video.setTranscriptionKey(transcriptionKey);
-                videoRepo.save(video);
-                return CompletableFuture.completedFuture(null);
-            }
+        try (InputStream is = minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket("videos")
+                        .object(video.getStorageKey())
+                        .build()
+        )) {
+            String transcription = whisper.getTranscription(is);
 
-            Transcript transcript = aiTranscriptionClient.getAiTranscription(video.getStorageKey());
-
-            if (transcript.getStatus() != TranscriptStatus.COMPLETED) {
-                log.error("Transcription not completed for video {}: {}", videoId, transcript.getStatus());
-                return CompletableFuture.completedFuture(null);
+            if (filter.containsBadWords(transcription)) {
+                throw new IllegalStateException("Video contains forbidden materials");
             }
 
             String transcriptionKey = saveTranscription(
                     video.getId(),
-                    transcript.getText().orElse("No transcription found"),
+                    transcription,
                     minioXa
             );
             video.setTranscriptionKey(transcriptionKey);
+            video.setStatus(MonetizationStatus.MONETIZED);
             videoRepo.save(video);
 
             return CompletableFuture.completedFuture(null);
@@ -84,6 +71,9 @@ public class TranscriptionService {
         } catch (Exception e) {
             log.error("Transcription failed for videoId={}", videoId, e);
             CompletableFuture<Void> failed = new CompletableFuture<>();
+            VideoInfo entity = videoRepo.findById(videoId).orElseThrow();
+            entity.setStatus(MonetizationStatus.REJECTED);
+            videoRepo.save(entity);
             failed.completeExceptionally(e);
             return failed;
         }

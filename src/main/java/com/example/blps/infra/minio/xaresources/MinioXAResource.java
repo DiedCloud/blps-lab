@@ -99,7 +99,7 @@ public class MinioXAResource implements XAResource {
 
         // Собрать потенциальные маркеры и выбрать последний
         for (io.minio.Result<io.minio.messages.Item> r : results) {
-            io.minio.messages.Item it = null;
+            io.minio.messages.Item it;
             try {
                 it = r.get();
             } catch (Exception e) {
