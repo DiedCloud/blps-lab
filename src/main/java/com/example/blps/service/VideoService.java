@@ -5,6 +5,7 @@ import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.dao.repository.model.User;
+import com.example.blps.infra.transcription.ProfanityFilter;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class VideoService {
     private final VideoInfoRepository videoRepo;
     private final AppealRepository appealRepo;
     private final MinioClient minioClient;
-    private final TextFilterService textFilterService;
+    private final ProfanityFilter textFilterService;
 
     public VideoInfo requestMonetization(Long videoId, User user) throws AccessDeniedException {
         VideoInfo video = videoRepo.findById(videoId)
@@ -49,7 +50,7 @@ public class VideoService {
             throw new NoSuchElementException("Failed to get transcription", e);
         }
 
-        if (textFilterService.containsBannedWord(transcription)) {
+        if (textFilterService.containsBadWords(transcription)) {
             video.setStatus(MonetizationStatus.PENDING_MODERATION);
         } else {
             video.setStatus(MonetizationStatus.MONETIZED);
