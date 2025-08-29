@@ -30,6 +30,9 @@ public class AppealService {
         if (appealRepo.existsByVideo(video))
             throw new IllegalStateException("Appeal already submitted");
 
+        if (video.getStatus() != MonetizationStatus.REJECTED)
+            throw new IllegalStateException("Monetization for video wasn't rejected");
+
         video.setStatus(MonetizationStatus.APPEAL_SUBMITTED);
         videoRepo.save(video);
 

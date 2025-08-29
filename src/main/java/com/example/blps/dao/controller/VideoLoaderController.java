@@ -2,6 +2,7 @@ package com.example.blps.dao.controller;
 
 import com.example.blps.dao.controller.mapper.ToDTOMapper;
 import com.example.blps.dao.controller.model.ResponseDTOs;
+import com.example.blps.dao.controller.model.VideoDTO;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.User;
 import com.example.blps.dao.repository.model.VideoInfo;
@@ -98,12 +99,12 @@ public class VideoLoaderController {
     })
     public ResponseEntity<ResponseDTOs.ApiResponse<ResponseDTOs.VideoInfoResponseDTO>> editVideoInfo(
             @PathVariable Long videoId,
-            @RequestParam("title") String title,
-            @RequestParam("description") String description
+            @RequestBody VideoDTO request
     ) {
         VideoInfo video = videoService.getVideoById(videoId);
-        video.setDescription(description);
-        video.setTitle(title);
+        video.setDescription(request.getDescription());
+        video.setTitle(request.getTitle());
+        videoRepo.save(video);
         return ResponseEntity.ok(
                 ResponseDTOs.ApiResponse.success(ToDTOMapper.toVideoInfoDTO(video), "Video info updated successfully")
         );

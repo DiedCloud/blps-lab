@@ -1,5 +1,6 @@
 package com.example.blps.service;
 
+import com.example.blps.dao.repository.AppealRepository;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.MonetizationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
@@ -8,6 +9,7 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +20,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class VideoService {
     private final VideoInfoRepository videoRepo;
+    private final AppealRepository appealRepo;
     private final MinioClient minioClient;
     private final TextFilterService textFilterService;
 
@@ -46,17 +49,16 @@ public class VideoService {
             throw new NoSuchElementException("Failed to get transcription", e);
         }
 
-        boolean compliant = textFilterService.containsBannedWord(transcription);
-
-        if (compliant) {
-            video.setStatus(MonetizationStatus.MONETIZED);
-        } else {
+        if (textFilterService.containsBannedWord(transcription)) {
             video.setStatus(MonetizationStatus.PENDING_MODERATION);
+        } else {
+            video.setStatus(MonetizationStatus.MONETIZED);
         }
 
         return videoRepo.save(video);
     }
 
+    @Transactional
     public VideoInfo moderate(Long videoId, boolean approved) {
         VideoInfo video = videoRepo.findById(videoId)
                 .orElseThrow(() -> new NoSuchElementException("Video not found"));
@@ -64,6 +66,15 @@ public class VideoService {
         if (video.getStatus() != MonetizationStatus.PENDING_MODERATION &&
                 video.getStatus() != MonetizationStatus.APPEAL_SUBMITTED) {
             throw new IllegalStateException("Video is not under moderation");
+        }
+
+        // Если была апелляция, то обработаем последнюю
+        if (video.getStatus() == MonetizationStatus.APPEAL_SUBMITTED) {
+            var appeal = appealRepo.findTopByVideoOrderByIdDesc(video).orElse(null);
+            if (appeal != null) {
+                appeal.setProcessed(true);
+                appealRepo.save(appeal);
+            }
         }
 
         video.setStatus(approved ? MonetizationStatus.MONETIZED : MonetizationStatus.REJECTED);

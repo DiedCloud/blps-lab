@@ -36,10 +36,10 @@ public class TextFilterService {
 
         for (String phrase : bannedPhrases) {
             if (normalizedText.contains(phrase)) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 }

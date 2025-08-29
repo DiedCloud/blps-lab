@@ -79,6 +79,13 @@ public class CommentController {
             );
         }
 
+        var commentRelatedVideo = commentService.getCommentById(commentId).getVideo().getId();
+        if (!commentRelatedVideo.equals(videoId)) {
+            return ResponseEntity.badRequest().body(
+                    ResponseDTOs.ApiResponse.error("Video id and comment id do not match")
+            );
+        }
+
         var comment = commentService.editComment(commentId, request.text());
         var commentDTO = ToDTOMapper.toCommentDTO(comment);
 
