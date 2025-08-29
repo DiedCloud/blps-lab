@@ -5,7 +5,7 @@ import com.example.blps.dao.repository.CommentRepository;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.Permission;
 import com.example.blps.dao.repository.model.User;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
@@ -17,15 +17,16 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Component
-@RequiredArgsConstructor
 public class PermissionEvaluatorImpl implements PermissionEvaluator {
-    private final VideoInfoRepository videoRepo;
-    private final CommentRepository commentRepo;
+    private final Map<String, JpaRepository<? extends OwnedObject, Long>> registeredEntityTypes;
 
-    Map<String, JpaRepository<? extends OwnedObject, Long>> registeredEntityTypes = Map.ofEntries(
-            Map.entry("VideoInfo", videoRepo),
-            Map.entry("Comment", commentRepo)
-    );
+    @Autowired
+    public PermissionEvaluatorImpl(VideoInfoRepository videoRepo, CommentRepository commentRepo) {
+        this.registeredEntityTypes = Map.ofEntries(
+                Map.entry("VideoInfo", videoRepo),
+                Map.entry("Comment", commentRepo)
+        );
+    }
 
     @Override
     public boolean hasPermission(Authentication auth, Object targetDomainObject, Object permission) {

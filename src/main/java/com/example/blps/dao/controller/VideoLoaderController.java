@@ -126,7 +126,9 @@ public class VideoLoaderController {
             VideoInfo video = videoService.getVideoById(videoId);
 
             minioXa.removeFile(videosBucket, video.getStorageKey());
-            minioXa.removeFile(transcriptionsBucket, video.getTranscriptionKey());
+            if (!video.getTranscriptionKey().isBlank()) {
+                minioXa.removeFile(transcriptionsBucket, video.getTranscriptionKey());
+            }
             // TODO отменить задачи создания транскрипции ?
 
             videoRepo.delete(video);

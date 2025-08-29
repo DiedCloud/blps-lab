@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Table
 public class Role {
-    @Id @GeneratedValue
+    @Id
     private Long id;
     @Column(unique = true, nullable = false)
     private String name;

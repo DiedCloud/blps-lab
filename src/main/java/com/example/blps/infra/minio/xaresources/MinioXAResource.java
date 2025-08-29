@@ -4,6 +4,7 @@ import io.minio.MinioClient;
 import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.messages.VersioningConfiguration;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +48,9 @@ public class MinioXAResource implements XAResource {
         if (!uncommittedFiles.containsKey(xid)) {
             throw new IllegalStateException("uncommited files map uninitialized");
         }
+        if (checkVersioningDisabled(bucket)) {
+            throw new IllegalStateException("Bucket '" + bucket + "' does not have versioning enabled; cannot rollback;");
+        }
 
         ObjectWriteResponse response = minioClient.putObject(PutObjectArgs.builder()
                 .bucket(bucket)
@@ -58,8 +66,80 @@ public class MinioXAResource implements XAResource {
     }
 
     public void removeFile(String bucket, String objectKey) throws Exception {
-        // TODO
-        throw new RuntimeException("Not implemented");
+        Xid xid = this.currentXid.get();
+        if (xid == null) {
+            throw new IllegalStateException("removeFile() called outside of XA transaction");
+        }
+        if (!uncommittedFiles.containsKey(xid)) {
+            throw new IllegalStateException("uncommited files map uninitialized");
+        }
+        if (checkVersioningDisabled(bucket)) {
+            throw new IllegalStateException("Bucket '" + bucket + "' does not have versioning enabled; cannot rollback;");
+        }
+
+        minioClient.removeObject(
+                io.minio.RemoveObjectArgs.builder()
+                        .bucket(bucket)
+                        .object(objectKey)
+                        .build()
+        );
+
+        // Получить все объекты (с названием с префиксом) для поиска versionId созданного delete-marker'а.
+        Iterable<io.minio.Result<io.minio.messages.Item>> results =
+                minioClient.listObjects(
+                        io.minio.ListObjectsArgs.builder()
+                                .bucket(bucket)
+                                .prefix(objectKey)
+                                .includeVersions(true)
+                                .build()
+                );
+
+        String deleteMarkerVersionId = null;
+        List<io.minio.messages.Item> deleteMarkers = new ArrayList<>();
+
+        // Собрать потенциальные маркеры и выбрать последний
+        for (io.minio.Result<io.minio.messages.Item> r : results) {
+            io.minio.messages.Item it = null;
+            try {
+                it = r.get();
+            } catch (Exception e) {
+                log.warn("Failed to read listObjects result for {}/{}: ", bucket, objectKey, e);
+                continue;
+            }
+            if (objectKey.equals(it.objectName()) && it.isDeleteMarker()) {
+                deleteMarkers.add(it);
+                if (it.isLatest()) {
+                    deleteMarkerVersionId = it.versionId();
+                    break;
+                }
+            }
+        }
+
+        // Если не найден marked-as-latest — выбрать наиболее "свежий" по lastModified
+        if (deleteMarkerVersionId == null && !deleteMarkers.isEmpty()) {
+            deleteMarkers.sort(Comparator.comparing(io.minio.messages.Item::lastModified).reversed());
+            deleteMarkerVersionId = deleteMarkers.get(0).versionId();
+        }
+
+        // Не удалось обнаружить versionId — бросить исключение, чтобы обработать транзакцию правильно.
+        if (deleteMarkerVersionId == null) {
+            throw new IllegalStateException("Failed to determine delete-marker versionId for object '" + objectKey + "' in bucket '" + bucket + "'");
+        }
+
+        // Добавить запись о неподтверждённой версии
+        uncommittedFiles
+                .computeIfAbsent(xid, x -> new ArrayList<>())
+                .add(new UploadedFile(bucket, objectKey, deleteMarkerVersionId));
+
+        log.debug("Removed file '{}/{}' -> created delete-marker version '{}'", bucket, objectKey, deleteMarkerVersionId);
+    }
+
+    boolean checkVersioningDisabled(String bucket) throws io.minio.errors.MinioException, InvalidKeyException, IOException, NoSuchAlgorithmException {
+        var versioning = minioClient.getBucketVersioning(
+                io.minio.GetBucketVersioningArgs.builder().bucket(bucket).build());
+        return (versioning == null
+                || versioning.status() == null
+                || !versioning.status().equals(VersioningConfiguration.Status.ENABLED));
     }
 
     @Override
