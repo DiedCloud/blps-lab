@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
+
 @Component
 @RequiredArgsConstructor
 public class SpringEventTranscriptionRequestPublisher implements RequestPublisher {
