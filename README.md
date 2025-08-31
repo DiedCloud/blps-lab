@@ -24,3 +24,41 @@ Boot.
   разработанного программного модуля. Запросы Insomnia оформить в виде файла экспорта.
 * Развернуть разработанное приложение на сервере helios.
 
+### How to запустить на Helios
+
+1. Собираем jar `./gradlew bootJar` и закидываем на Helios любым удобным способом
+2. Закидываем .env туда же
+3. Устанавливаем whisper-cli с моделью
+```shell
+  git clone https://github.com/ggml-org/whisper.cpp.git
+  
+  cd whisper.cpp
+  
+  sh ./models/download-ggml-model.sh base
+  
+  cmake -B build
+  cmake --build build -j --config Release
+```
+4. Заносим в PATH `export PATH=${PATH}:/path_to_whisper_cli`
+5. Устанавливаем ffmpeg `fetch https://github.com/Thefrank/ffmpeg-static-freebsd/releases/download/v7.1/ffmpeg` и тоже заносим в PATH
+6. Устанавливаем Minio 
+```shell
+fetch https://pkg.freebsd.org/FreeBSD:14:amd64/latest/All/minio-2025.07.23.15.54.02_1.pkg
+mv minio-2025.07.23.15.54.02_1.pkg minio-2025.07.23.15.54.02_1.tar.gz
+tar -xf minio-2025.07.23.15.54.02_1.tar.gz
+cp usr/local/bin/minio minio
+chmod +x minio
+```
+7. Запускаем и создаем бакеты videos и transcriptions через WebUI
+```shell
+mkdir data
+minio server ./data
+```
+8. Прокидываем порты
+```shell
+ssh -R 5432:localhost:5432 sXXXXXX@helios.se.ifmo.ru -p 2222
+ssh -L 8080:localhost:8080 sXXXXXX@helios.se.ifmo.ru -p 2222
+ssh -L minioadminport:localhost:miniadminport sXXXXXX@helios.se.ifmo.ru -p 2222 # minioadminport генерируется при запуске minio server в логах
+```
+9. Запускаем приложение `env $(cat .env | xargs) java -jar blps.jar`
+
