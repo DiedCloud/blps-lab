@@ -1,28 +1,14 @@
 package com.example.blps.infra.transcription;
 
 import com.example.blps.exception.TranscriptionException;
-import io.github.givimad.whisperjni.WhisperContext;
-import io.github.givimad.whisperjni.WhisperFullParams;
-import io.github.givimad.whisperjni.WhisperJNI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Для запуска компонента необходимо установить модель локально и указать к ней путь в WHISPER_MODEL_PATH
