@@ -1,8 +1,10 @@
 package com.example.blps.service;
 
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +14,11 @@ import java.util.Map;
 
 @Service
 public class JWTService {
+    private final SecretKey secretKey;
 
-    private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
+    public JWTService(@Value("${jwt-secret}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(User user) {
         Map<String, Object> claims = Map.of(

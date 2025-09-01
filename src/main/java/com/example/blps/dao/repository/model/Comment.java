@@ -1,13 +1,15 @@
 package com.example.blps.dao.repository.model;
 
+import com.example.blps.dao.OwnedObject;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class Comment {
+public class Comment implements Serializable, OwnedObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -24,4 +26,9 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id", nullable = false)
     VideoInfo video;
+
+    @Override
+    public User getOwner() {
+        return author;
+    }
 }

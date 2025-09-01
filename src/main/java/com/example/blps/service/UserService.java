@@ -1,8 +1,7 @@
 package com.example.blps.service;
 
 import com.example.blps.dao.repository.UserRepository;
-import com.example.blps.dao.repository.mapper.UserMapper;
-import com.example.blps.entity.User;
+import com.example.blps.dao.repository.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,15 +16,15 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return UserMapper.getUser(userRepository.findByLogin(username));
+        return userRepository.findByLogin(username);
     }
 
     public User getByLogin(String login) {
-        com.example.blps.dao.repository.model.User user = userRepository.findByLogin(login);
+        User user = userRepository.findByLogin(login);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return UserMapper.getUser(user);
+        return user;
     }
 
     public User getCurrentUser() {
@@ -33,9 +32,11 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(String login, String password, String name) {
-        User user = new User(login, password, name);
-        return UserMapper.getUser(
-                userRepository.save(UserMapper.toUserRepoEntity(user))
-        );
+        User user = new User();
+        user.setLogin(login);
+        user.setPassword(password);
+        user.setName(name);
+        userRepository.save(user);
+        return user;
     }
 }
