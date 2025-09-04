@@ -1,5 +1,3 @@
-rootProject.name = "blps"
-
 rootProject.name = "blps-lab"
 
 include("shared")
