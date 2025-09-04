@@ -90,7 +90,7 @@ services:
       BANNED_WORDS_PATH: ${BANNED_WORDS_PATH}
       JWT_SECRET: ${JWT_SECRET}
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 6
@@ -119,7 +119,11 @@ services:
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PATH: ${RABBIT_PATH}
       BANNED_WORDS_PATH: ${BANNED_WORDS_PATH}
-      WHISPER_MODEL_PATH: ${WHISPER_MODEL_PATH}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
 
 
 volumes:

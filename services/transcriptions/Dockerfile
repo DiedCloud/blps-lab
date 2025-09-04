@@ -30,16 +30,25 @@ RUN java -Djarmode=layertools -jar app.jar extract
 FROM eclipse-temurin:17-jre-jammy AS runtime
 WORKDIR /app
 
-# non-root пользователь + log каталог + владение ради прав
-RUN addgroup --system app && adduser --system --ingroup app app \
- && mkdir -p /var/atomikos/api-logs \
- && chown -R app:app /var/atomikos \
- && chown -R app:app /app
+# non-root пользователь
+RUN addgroup --system app && adduser --system --ingroup app app && chown -R app:app /app
+
+# Подгрузить собранные whisper (бинарник + папку models) и ffmpeg, указать пути
+COPY ./ffmpeg /usr/bin/
+COPY ./whisper.cpp/ /usr/bin/whisper.cpp/
+
+RUN chown -R app:app /usr/bin/ffmpeg && chown -R app:app /usr/bin/whisper.cpp
+
+ENV WHISPER_MODEL_PATH=/bin/whisper.cpp/models/ggml-base.bin
+ENV PATH=${PATH}:/bin/:/bin/whisper.cpp/build/bin
+
+# log каталог
+RUN mkdir -p /var/atomikos/logs && chown -R app:app /var/atomikos
 
 # Явно задаём Atomikos log dir и уникальное имя TM через переменные среды
 ENV JAVA_TOOL_OPTIONS="-Dcom.atomikos.icatch.log_base_dir=/var/atomikos/logs \
- -Dcom.atomikos.icatch.log_base_name=api_tmlog \
- -Dcom.atomikos.icatch.tm_unique_name=api-tm"
+ -Dcom.atomikos.icatch.log_base_name=transcriptions_tmlog \
+ -Dcom.atomikos.icatch.tm_unique_name=transcriptions-tm"
 
 USER app
 

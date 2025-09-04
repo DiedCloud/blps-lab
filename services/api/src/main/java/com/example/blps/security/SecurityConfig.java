@@ -64,6 +64,7 @@ public class SecurityConfig {
             ar.requestMatchers(mvc.pattern("/auth/registration")).permitAll();
             ar.requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll();
             ar.requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll();
+            ar.requestMatchers(mvc.pattern("/actuator/health")).permitAll();
             ar.anyRequest().authenticated();
         }).httpBasic(withDefaults());
 
