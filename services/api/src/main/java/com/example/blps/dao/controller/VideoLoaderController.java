@@ -5,9 +5,9 @@ import com.example.blps.dao.controller.model.ResponseDTOs;
 import com.example.blps.dao.controller.model.VideoDTO;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.VideoInfo;
+import com.example.blps.infra.messaging.RabbitMQTranscriptionRequestPublisher;
 import com.example.blps.infra.minio.xaresources.MinioEnlister;
 import com.example.blps.infra.minio.xaresources.MinioXAResource;
-import com.example.blps.infra.messaging.SpringEventTranscriptionRequestPublisher;
 import com.example.blps.exception.VideoLoadingError;
 import com.example.blps.security.UserDetailsImpl;
 import com.example.blps.service.VideoService;
@@ -38,7 +38,7 @@ public class VideoLoaderController {
     private final VideoService videoService;
 
     private final MinioEnlister minioEnlister;
-    private final SpringEventTranscriptionRequestPublisher videoTranscriptionRequestPublisher;
+    private final RabbitMQTranscriptionRequestPublisher videoTranscriptionRequestPublisher;
 
     @Value("${minio.buckets.videos}")
     private String videosBucket;

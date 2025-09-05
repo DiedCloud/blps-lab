@@ -29,7 +29,6 @@ public class TranscriptionService {
     @Value("${minio.buckets.transcriptions}")
     private String transcriptionsBucket;
 
-    @Async("transcribeExecutor")
     public CompletableFuture<Void> transcribeVideoById(Long videoId) {
         VideoInfo video = videoRepo.findById(videoId)
                 .orElseThrow(() -> new IllegalStateException("Video not found: " + videoId));

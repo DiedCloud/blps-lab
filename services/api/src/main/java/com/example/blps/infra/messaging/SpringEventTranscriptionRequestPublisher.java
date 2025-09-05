@@ -13,6 +13,6 @@ public class SpringEventTranscriptionRequestPublisher implements RequestPublishe
 
     @Override
     public void publish(Long videoId) {
-        publisher.publishEvent(new VideoUploadedEvent(videoId));  // TODO поменять на RabbitMQ. Текущее уже не ловится, удалён event listener
+        publisher.publishEvent(new VideoUploadedEvent(videoId));
     }
 }
