@@ -2,7 +2,6 @@
 .gradle
 build
 **/build
-!whisper.cpp/build
 
 ### git ###
 .git
