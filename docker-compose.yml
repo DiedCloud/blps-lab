@@ -56,7 +56,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASS}
-      RABBITMQ_DEFAULT_VHOST: ${RABBIT_VHOST}
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "status"]
       interval: 10s
@@ -89,7 +88,6 @@ services:
       RABBIT_PORT: 5672
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PASS: ${RABBIT_PASS}
-      RABBIT_VHOST: ${RABBIT_VHOST}
       BANNED_WORDS_PATH: ${BANNED_WORDS_PATH}
       JWT_SECRET: ${JWT_SECRET}
     healthcheck:
@@ -102,6 +100,8 @@ services:
     build:
       context: .
       dockerfile: services/transcriptions/Dockerfile
+      args:
+        - WHISPER_MODEL_TYPE=${WHISPER_MODEL_TYPE}
     image: blps/transcriptions:latest
     restart: unless-stopped
     depends_on:
@@ -124,7 +124,6 @@ services:
       RABBIT_PORT: 5672
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PASS: ${RABBIT_PASS}
-      RABBIT_VHOST: ${RABBIT_VHOST}
       BANNED_WORDS_PATH: ${BANNED_WORDS_PATH}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]

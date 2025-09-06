@@ -25,45 +25,21 @@ WORKDIR /extract
 COPY --from=builder /home/gradle/project/services/transcriptions/build/libs/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
-
-# Stage 3: whisper build
-FROM ubuntu:22.04 AS whisper-builder
-WORKDIR /build
-
-# Установим зависимости для сборки whisper.cpp (glibc, etc.)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential cmake git pkg-config \
-    libopenblas-dev libsndfile1-dev libfftw3-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY ./whisper.cpp /build/whisper.cpp
-
-WORKDIR /build/whisper.cpp
-RUN mkdir -p build && cmake -B build && cmake --build build -j --config Release
-
-
 # Stage 4: runtime
 FROM eclipse-temurin:17-jre-jammy AS runtime
 WORKDIR /app
 
 # Установим ffmpeg из репозитория (делаем это как root)
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ffmpeg \
+ && apt-get install -y --no-install-recommends libgomp1 ffmpeg \
  && rm -rf /var/lib/apt/lists/*
 
 # non-root пользователь
 RUN addgroup --system app && adduser --system --ingroup app app && chown -R app:app /app
 
-# Копируем собранный whisper-cli и модели из whisper-builder
-COPY --from=whisper-builder /build/whisper.cpp/build/bin/whisper-cli /usr/local/bin/whisper-cli
-COPY --from=whisper-builder /build/whisper.cpp/models /usr/local/whisper.cpp/models
-# Копируем все скомпилированные .so из build
-COPY --from=whisper-builder /build/whisper.cpp/build/ggml/src/*.so* /usr/local/lib/
-COPY --from=whisper-builder /build/whisper.cpp/build/src/*.so* /usr/local/lib/
+ARG WHISPER_MODEL_TYPE
 
-RUN chmod +x /usr/local/bin/whisper-cli && chmod -R a+rX /usr/local/whisper.cpp/models && ldconfig
-
-ENV WHISPER_MODEL_PATH=/usr/local/whisper.cpp/models/ggml-base.bin
+ENV WHISPER_MODEL_TYPE=${WHISPER_MODEL_TYPE}
 ENV PATH=${PATH}:/usr/local/bin
 
 # log каталог
