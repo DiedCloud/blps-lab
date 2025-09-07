@@ -1,9 +1,15 @@
+.env
+**/.env
+
 HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+whisper.cpp/
+ffmpeg
 ggml-base.bin
 ggml-large-v3-turbo.bin
 
@@ -37,3 +43,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### other ###
+tmlog*

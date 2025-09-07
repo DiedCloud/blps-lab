@@ -1,0 +1,25 @@
+### build ###
+.gradle
+build
+**/build
+
+### git ###
+.git
+.gitignore
+.gitattributes
+
+### IDEs ###
+.vscode
+.idea
+*.iws
+*.iml
+*.ipr
+local.properties
+
+### docs ###
+README.md
+HELP.md
+BLPS.drawio
+
+### other ###
+tmlog*
