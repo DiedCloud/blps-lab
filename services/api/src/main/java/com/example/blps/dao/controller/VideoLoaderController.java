@@ -11,6 +11,8 @@ import com.example.blps.infra.minio.xaresources.MinioXAResource;
 import com.example.blps.exception.VideoLoadingError;
 import com.example.blps.security.UserDetailsImpl;
 import com.example.blps.service.VideoService;
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,6 +20,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,8 +29,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/video")
@@ -38,6 +48,7 @@ public class VideoLoaderController {
     private final VideoService videoService;
 
     private final MinioEnlister minioEnlister;
+    private final MinioClient minioClient;
     private final RabbitMQTranscriptionRequestPublisher videoTranscriptionRequestPublisher;
 
     @Value("${minio.buckets.videos}")
@@ -66,6 +77,7 @@ public class VideoLoaderController {
 
         // Registration of MinioXAResource in current transaction
         MinioXAResource minioXa = minioEnlister.enlistMinioXAResource();
+        LocalDateTime published = LocalDateTime.now();
 
         try {
             VideoInfo video = new VideoInfo();
@@ -73,7 +85,8 @@ public class VideoLoaderController {
             video.setDescription(description);
             video.setTranscriptionKey("");
             video.setStorageKey("");
-            video.setPublished(LocalDateTime.now());
+            video.setPublished(published);
+            video.setLastAccessTime(published);
             video.setAuthor(principal.user());
             videoRepo.save(video);
 
@@ -104,6 +117,7 @@ public class VideoLoaderController {
         VideoInfo video = videoService.getVideoById(videoId);
         video.setDescription(request.getDescription());
         video.setTitle(request.getTitle());
+        video.setLastAccessTime(LocalDateTime.now());
         videoRepo.save(video);
         return ResponseEntity.ok(
                 ResponseDTOs.ApiResponse.success(ToDTOMapper.toVideoInfoDTO(video), "Video info updated successfully")
@@ -112,9 +126,9 @@ public class VideoLoaderController {
 
     @DeleteMapping("/{videoId}")
     @PreAuthorize("hasPermission(#videoId, 'VideoInfo', 'delete_any_video')")
-    @Operation(summary = "Delete an existing comment")
+    @Operation(summary = "Delete an existing video")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Comment deleted successfully"),
+            @ApiResponse(responseCode = "200", description = "Video deleted successfully"),
     })
     @Transactional
     public ResponseEntity<ResponseDTOs.ApiResponse<?>> deleteVideo(
@@ -130,7 +144,6 @@ public class VideoLoaderController {
             if (!video.getTranscriptionKey().isBlank()) {
                 minioXa.removeFile(transcriptionsBucket, video.getTranscriptionKey());
             }
-            // TODO отменить задачи создания транскрипции ?
 
             videoRepo.delete(video);
 
@@ -139,6 +152,57 @@ public class VideoLoaderController {
             );
         } catch (Exception e) {
             throw new VideoLoadingError("Failed to delete video: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{videoId}")
+    @Operation(summary = "Stream video")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "206", description = "Streaming video"),
+            @ApiResponse(responseCode = "404", description = "Video not found"),
+            @ApiResponse(responseCode = "503", description = "Video service unavailable"),
+    })
+    public ResponseEntity<Resource> streamVideo(
+            @PathVariable Long videoId,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeHeader
+    ) {
+        VideoInfo video = videoService.getVideoById(videoId);
+
+        try {
+            InputStream inputStream = minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(videosBucket)
+                    .object(video.getStorageKey())
+                    .build());
+
+            byte[] allBytes = inputStream.readAllBytes();
+            long fileSize = allBytes.length;
+
+            if (rangeHeader == null) {
+                return ResponseEntity.ok()
+                        .contentLength(fileSize)
+                        .contentType(MediaType.valueOf("video/mp4"))
+                        .body(new ByteArrayResource(allBytes));
+            }
+
+            String[] ranges = rangeHeader.replace("bytes=", "").split("-");
+            long start = Long.parseLong(ranges[0]);
+            long end = (ranges.length > 1 && !ranges[1].isEmpty())
+                    ? Long.parseLong(ranges[1])
+                    : fileSize - 1;
+
+            if (end >= fileSize) end = fileSize - 1;
+            long rangeLength = end - start + 1;
+
+            byte[] partialContent = Arrays.copyOfRange(allBytes, (int) start, (int) end + 1);
+
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                    .header(HttpHeaders.CONTENT_TYPE, "video/mp4")
+                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeLength))
+                    .header(HttpHeaders.CONTENT_RANGE, "bytes %d-%d/%d".formatted(start, end, fileSize))
+                    .body(new ByteArrayResource(partialContent));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to stream video", e);
         }
     }
 }

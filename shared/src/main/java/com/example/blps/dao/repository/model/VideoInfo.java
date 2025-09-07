@@ -27,6 +27,8 @@ public class VideoInfo implements Serializable, OwnedObject {
     String storageKey;
     @Column(nullable = false)
     LocalDateTime published;
+    @Column(nullable = false, name = "last_access_time")
+    private LocalDateTime lastAccessTime;
 
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)

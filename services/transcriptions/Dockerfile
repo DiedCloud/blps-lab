@@ -25,14 +25,21 @@ WORKDIR /extract
 COPY --from=builder /home/gradle/project/services/transcriptions/build/libs/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
+# Stage 3: deps
+FROM eclipse-temurin:17-jdk-jammy AS deps
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libgomp1 xz-utils
+
+RUN wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz \
+    && tar -xf ffmpeg-master-latest-linux64-gpl.tar.xz \
+    && mv ffmpeg-master-latest-linux64-gpl/bin/ffmpeg /usr/local/bin/
+
 # Stage 4: runtime
 FROM eclipse-temurin:17-jre-jammy AS runtime
 WORKDIR /app
 
-# Установим ffmpeg из репозитория (делаем это как root)
-RUN apt-get update \
- && apt-get install -y --no-install-recommends libgomp1 ffmpeg \
- && rm -rf /var/lib/apt/lists/*
+COPY --from=deps /usr/local/bin/ffmpeg /usr/local/bin/
+COPY --from=deps /usr/lib/x86_64-linux-gnu/libgomp* /usr/lib/x86_64-linux-gnu/
 
 # non-root пользователь
 RUN addgroup --system app && adduser --system --ingroup app app && chown -R app:app /app
