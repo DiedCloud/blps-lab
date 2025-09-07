@@ -31,9 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -118,7 +116,7 @@ public class VideoLoaderController {
         video.setDescription(request.getDescription());
         video.setTitle(request.getTitle());
         video.setLastAccessTime(LocalDateTime.now());
-        videoRepo.save(video);
+        videoService.updateVideo(video);
         return ResponseEntity.ok(
                 ResponseDTOs.ApiResponse.success(ToDTOMapper.toVideoInfoDTO(video), "Video info updated successfully")
         );
@@ -167,6 +165,8 @@ public class VideoLoaderController {
             @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeHeader
     ) {
         VideoInfo video = videoService.getVideoById(videoId);
+        video.setLastAccessTime(LocalDateTime.now());
+        videoService.updateVideo(video);
 
         try {
             InputStream inputStream = minioClient.getObject(GetObjectArgs.builder()
