@@ -1,5 +1,6 @@
 package com.example.blps.dao.controller.model;
 
+import com.example.blps.dao.repository.model.ModerationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,6 +41,7 @@ public class ResponseDTOs {
         private UserResponseDTO author;
         private String content;
         private LocalDateTime published;
+        private ModerationStatus status;
         private Long videoId;
     }
 

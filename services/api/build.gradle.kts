@@ -67,6 +67,13 @@ dependencies {
 
     // open api docs (swagger)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+
+    // jakarta resource api
+    implementation("jakarta.resource:jakarta.resource-api:2.1.0")
+    // spring jms
+    implementation("org.springframework:spring-jms:7.0.0-M8")
+    // jakarta jms api
+    implementation("jakarta.jms:jakarta.jms-api:3.1.0")
 }
 
 tasks.withType<Test> {

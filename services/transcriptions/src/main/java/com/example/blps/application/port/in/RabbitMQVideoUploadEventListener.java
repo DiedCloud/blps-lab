@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 public class RabbitMQVideoUploadEventListener {
     private final TranscriptionService transcriptionService;
 
-
     @RabbitListener(queues = "${rabbit.queue.transcriptionsQueueName}", messageConverter = "jackson2JsonMessageConverter")
     public void onVideoUploaded(VideoUploadedEvent event) {
         log.info("Received message: {}", event);

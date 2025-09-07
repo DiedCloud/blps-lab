@@ -42,6 +42,7 @@ public class ToDTOMapper {
                 .content(comment.getContent())
                 .published(comment.getPublished())
                 .author(toUserDTO(comment.getAuthor()))
+                .status(comment.getStatus())
                 .videoId(comment.getVideo().getId())
                 .build();
     }

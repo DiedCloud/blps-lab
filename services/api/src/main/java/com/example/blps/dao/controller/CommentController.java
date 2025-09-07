@@ -3,8 +3,11 @@ package com.example.blps.dao.controller;
 import com.example.blps.dao.controller.mapper.ToDTOMapper;
 import com.example.blps.dao.controller.model.NewCommentDTO;
 import com.example.blps.dao.controller.model.ResponseDTOs;
+import com.example.blps.dao.repository.CommentRepository;
+import com.example.blps.dao.repository.model.ModerationStatus;
 import com.example.blps.dao.repository.model.VideoInfo;
 import com.example.blps.security.UserDetailsImpl;
+import com.example.blps.service.ModerationService;
 import com.example.blps.service.ProfanityFilter;
 import com.example.blps.service.CommentService;
 import com.example.blps.service.VideoService;
@@ -29,6 +32,7 @@ public class CommentController {
     private final CommentService commentService;
     private final ProfanityFilter textFilterService;
     private final VideoService videoService;
+    private final ModerationService moderationService;
 
     @PostMapping
     @Operation(summary = "Create a new comment")
@@ -51,6 +55,7 @@ public class CommentController {
         }
 
         var comment = commentService.createComment(principal.user(), video, request.text());
+        moderationService.moderate(comment);
         var commentDTO = ToDTOMapper.toCommentDTO(comment);
 
         return ResponseEntity.ok(
@@ -87,6 +92,7 @@ public class CommentController {
         }
 
         var comment = commentService.editComment(commentId, request.text());
+        moderationService.moderate(comment);
         var commentDTO = ToDTOMapper.toCommentDTO(comment);
 
         return ResponseEntity.ok(
