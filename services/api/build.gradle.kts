@@ -30,8 +30,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+
+    implementation("com.rabbitmq.jms:rabbitmq-jms:3.4.0")
+    implementation("org.springframework:spring-jms")
 
     // Postgres
     implementation("org.postgresql:postgresql")

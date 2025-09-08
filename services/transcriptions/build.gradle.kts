@@ -27,7 +27,9 @@ dependencies {
     implementation(project(":shared"))
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
+
+    implementation("com.rabbitmq.jms:rabbitmq-jms:3.4.0")
+    implementation("org.springframework:spring-jms")
 
     // web for health-chek
     implementation("org.springframework.boot:spring-boot-starter-web")
