@@ -36,6 +36,14 @@ public class ResponseDTOs {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class TranscriptionDTO {
+        private String transcription;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CommentResponseDTO {
         private Long id;
         private UserResponseDTO author;
