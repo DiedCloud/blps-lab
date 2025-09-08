@@ -90,5 +90,9 @@ public class VideoService {
     public boolean checkVideoById(Long videoId) {
         return videoRepo.existsById(videoId);
     }
+
+    public void updateVideo(VideoInfo video) {
+        videoRepo.save(video);
+    }
 }
 
