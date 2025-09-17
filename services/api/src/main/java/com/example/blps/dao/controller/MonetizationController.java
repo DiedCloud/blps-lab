@@ -1,9 +1,8 @@
 package com.example.blps.dao.controller;
 
-import com.example.blps.dao.controller.mapper.ToDTOMapper;
-import com.example.blps.dao.controller.model.AppealRequestDTO;
-import com.example.blps.dao.controller.model.ModerationRequestDTO;
-import com.example.blps.dao.controller.model.ResponseDTOs;
+import com.example.blps.dao.model.AppealRequestDTO;
+import com.example.blps.dao.model.ModerationRequestDTO;
+import com.example.blps.dao.model.ResponseDTOs;
 import com.example.blps.security.UserDetailsImpl;
 import com.example.blps.service.AppealService;
 import com.example.blps.service.VideoService;
@@ -42,11 +41,8 @@ public class MonetizationController {
     ) throws AccessDeniedException {
 
         var videoInfo = videoService.requestMonetization(videoId, principal.user());
-        var responseDTO = ToDTOMapper.toVideoInfoDTO(videoInfo);
 
-        return ResponseEntity.ok(
-                ResponseDTOs.ApiResponse.success(responseDTO, "Monetization request processed successfully")
-        );
+        return ResponseEntity.ok(videoInfo);
     }
 
     @PostMapping("/moderate/{videoId}")
@@ -64,11 +60,8 @@ public class MonetizationController {
     ) {
 
         var videoInfo = videoService.moderate(videoId, req.approved());
-        var responseDTO = ToDTOMapper.toVideoInfoDTO(videoInfo);
 
-        return ResponseEntity.ok(
-                ResponseDTOs.ApiResponse.success(responseDTO, "Moderation completed successfully")
-        );
+        return ResponseEntity.ok(videoInfo);
     }
 
     @PostMapping("appeal/{videoId}")
@@ -87,10 +80,7 @@ public class MonetizationController {
     ) {
 
         var appeal = appealService.submitAppeal(videoId, req.reason(), principal.user());
-        ResponseDTOs.AppealResponseDTO appealDTO = ToDTOMapper.toAppealDTO(appeal);
 
-        return ResponseEntity.ok(
-                ResponseDTOs.ApiResponse.success(appealDTO, "Appeal submitted successfully")
-        );
+        return ResponseEntity.ok(appeal);
     }
 }

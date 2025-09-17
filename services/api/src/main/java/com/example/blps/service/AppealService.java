@@ -1,5 +1,7 @@
 package com.example.blps.service;
 
+import com.example.blps.dao.mapper.ToDTOMapper;
+import com.example.blps.dao.model.ResponseDTOs;
 import com.example.blps.dao.repository.AppealRepository;
 import com.example.blps.dao.repository.VideoInfoRepository;
 import com.example.blps.dao.repository.model.Appeal;
@@ -20,7 +22,7 @@ public class AppealService {
     private final VideoInfoRepository videoRepo;
 
     @Transactional
-    public Appeal submitAppeal(Long videoId, String reason, User user) {
+    public ResponseDTOs.ApiResponse<ResponseDTOs.AppealResponseDTO> submitAppeal(Long videoId, String reason, User user) {
         VideoInfo video = videoRepo.findById(videoId)
                 .orElseThrow(() -> new NoSuchElementException("Video not found"));
 
@@ -41,7 +43,9 @@ public class AppealService {
         appeal.setReason(reason);
         appeal.setProcessed(false);
 
-        return appealRepo.save(appeal);
+        appealRepo.save(appeal);
+
+        return ResponseDTOs.ApiResponse.success(ToDTOMapper.toAppealDTO(appeal), "Appeal submitted successfully");
     }
 }
 

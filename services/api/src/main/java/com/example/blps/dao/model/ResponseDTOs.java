@@ -1,4 +1,4 @@
-package com.example.blps.dao.controller.model;
+package com.example.blps.dao.model;
 
 import com.example.blps.dao.repository.model.ModerationStatus;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,17 @@ public class ResponseDTOs {
         private String storageKey;
         private String status;
         private String username;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StreamVideoResponseDTO {
+        private byte[] content;
+        private Long start;
+        private Long end;
+        private Long wholeVideSize;
     }
 
     @Data

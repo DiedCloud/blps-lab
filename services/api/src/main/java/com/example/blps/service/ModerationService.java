@@ -1,6 +1,6 @@
 package com.example.blps.service;
 
-import com.example.blps.dao.controller.model.ModerationResultDTO;
+import com.example.blps.dao.model.ModerationResultDTO;
 import com.example.blps.dao.repository.CommentRepository;
 import com.example.blps.dao.repository.model.Comment;
 import com.example.blps.dao.repository.model.ModerationStatus;

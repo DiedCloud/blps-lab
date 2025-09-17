@@ -1,17 +1,14 @@
 package com.example.blps.jca;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.blps.dao.controller.model.HiveApiResponseDTO;
-import com.example.blps.dao.controller.model.HiveRequestDTO;
+import com.example.blps.dao.model.HiveApiResponseDTO;
+import com.example.blps.dao.model.HiveRequestDTO;
 import com.example.blps.exception.HiveException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;

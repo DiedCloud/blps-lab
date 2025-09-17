@@ -1,13 +1,10 @@
 package com.example.blps.dao.controller;
 
-import com.example.blps.security.SecurityConfig;
-import com.example.blps.dao.controller.model.AuthRequestDTO;
-import com.example.blps.dao.controller.model.AuthResponseDTO;
-import com.example.blps.dao.controller.model.RegisterRequestDTO;
-import com.example.blps.dao.controller.model.ResponseDTOs;
-import com.example.blps.dao.repository.model.User;
-import com.example.blps.service.JWTService;
-import com.example.blps.service.UserService;
+import com.example.blps.dao.model.AuthRequestDTO;
+import com.example.blps.dao.model.AuthResponseDTO;
+import com.example.blps.dao.model.RegisterRequestDTO;
+import com.example.blps.dao.model.ResponseDTOs;
+import com.example.blps.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -15,8 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Operations for user authentication")
 public class AuthController {
-    private final AuthenticationManager manager;
-    private final UserService userService;
-    private final JWTService jwtService;
-    private final SecurityConfig securityConfig;
+    private final AuthService authService;
 
     @CrossOrigin
     @PostMapping("/login")
@@ -42,12 +34,7 @@ public class AuthController {
     ) {
 
         try {
-            manager.authenticate(new UsernamePasswordAuthenticationToken(
-                    request.getLogin(), request.getPassword()
-            ));
-
-            User user = userService.getByLogin(request.getLogin());
-            final String jwt = jwtService.generateToken(user);
+            final String jwt = authService.login(request.getLogin(), request.getPassword());
 
             return ResponseEntity.ok(
                     ResponseDTOs.ApiResponse.success(
@@ -73,13 +60,7 @@ public class AuthController {
             @Valid @RequestBody final RegisterRequestDTO request
     ) {
 
-        User user = userService.createUser(
-                request.getLogin(),
-                securityConfig.passwordEncoder().encode(request.getPassword()),
-                request.getName()
-        );
-
-        final String jwt = jwtService.generateToken(user);
+        final String jwt = authService.register(request.getLogin(), request.getPassword(), request.getName());
 
         return ResponseEntity.ok(
                 ResponseDTOs.ApiResponse.success(

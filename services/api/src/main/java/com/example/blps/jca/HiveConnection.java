@@ -1,7 +1,7 @@
 package com.example.blps.jca;
 
-import com.example.blps.dao.controller.model.HiveApiResponseDTO;
-import com.example.blps.dao.controller.model.ModerationResultDTO;
+import com.example.blps.dao.model.HiveApiResponseDTO;
+import com.example.blps.dao.model.ModerationResultDTO;
 import com.example.blps.exception.HiveException;
 import jakarta.resource.ResourceException;
 import jakarta.resource.cci.*;

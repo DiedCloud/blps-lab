@@ -1,6 +1,6 @@
-package com.example.blps.dao.controller.mapper;
+package com.example.blps.dao.mapper;
 
-import com.example.blps.dao.controller.model.ResponseDTOs;
+import com.example.blps.dao.model.ResponseDTOs;
 import com.example.blps.dao.repository.model.Appeal;
 import com.example.blps.dao.repository.model.Comment;
 import com.example.blps.dao.repository.model.MonetizationInfo;

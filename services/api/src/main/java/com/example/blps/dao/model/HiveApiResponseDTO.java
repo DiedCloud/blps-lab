@@ -1,4 +1,4 @@
-package com.example.blps.dao.controller.model;
+package com.example.blps.dao.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

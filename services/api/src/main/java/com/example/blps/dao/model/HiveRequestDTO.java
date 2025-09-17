@@ -1,4 +1,4 @@
-package com.example.blps.dao.controller.model;
+package com.example.blps.dao.model;
 
 import java.util.List;
 
