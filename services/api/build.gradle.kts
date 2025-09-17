@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
+    war
 }
 
 group = "com.example"
@@ -25,6 +26,7 @@ repositories {
 
 dependencies {
     implementation(project(":shared"))
+    implementation(enforcedPlatform("org.camunda.bpm:camunda-bom:7.24.0"))
 
     // spring boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -32,7 +34,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
+    // camunda
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter")
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest")
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp")
+    implementation("org.camunda.bpm:camunda-engine")
+    implementation("org.camunda.bpm:camunda-engine-plugin-spin")
+    implementation("org.camunda.bpm:camunda-engine-plugin-connect")
+    implementation("org.camunda.bpm:camunda-spin-dataformat-all")
 
+    // rabbit + jms
     implementation("com.rabbitmq.jms:rabbitmq-jms:3.4.0")
     implementation("org.springframework:spring-jms")
 
