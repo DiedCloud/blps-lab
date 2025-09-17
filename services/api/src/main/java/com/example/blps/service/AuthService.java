@@ -6,6 +6,7 @@ import com.example.blps.security.PermissionEvaluatorImpl;
 import com.example.blps.security.SecurityConfig;
 import com.example.blps.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;

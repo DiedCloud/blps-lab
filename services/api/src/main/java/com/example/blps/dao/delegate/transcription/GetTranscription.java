@@ -3,6 +3,9 @@ package com.example.blps.dao.delegate.transcription;
 import com.example.blps.service.AuthService;
 import com.example.blps.service.TranscriptionService;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.delegate.BpmnError;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 
@@ -15,7 +18,7 @@ public class GetTranscription implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) {
         try {
-            Long videoId = Long.valueOf(delegateExecution.getVariable("videoId"));
+            Long videoId = Long.valueOf(String.valueOf(delegateExecution.getVariable("videoId")));
 
             if (!authService.hasPermissionInDelegatedAuth(delegateExecution, videoId, "VideoInfo", "edit_any_video")) {
                 throw new IllegalAccessException("Forbidden");

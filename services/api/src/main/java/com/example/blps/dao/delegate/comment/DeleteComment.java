@@ -3,6 +3,9 @@ package com.example.blps.dao.delegate.comment;
 import com.example.blps.service.AuthService;
 import com.example.blps.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.delegate.BpmnError;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,11 +16,9 @@ public class DeleteComment implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) {
-        String userId = delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId();
-
         try {
-            Long commentId = Long.valueOf(delegateExecution.getVariable("commentId"));
-            Long videoId = Long.valueOf(delegateExecution.getVariable("videoId"));
+            Long commentId = Long.valueOf(String.valueOf(delegateExecution.getVariable("commentId")));
+            Long videoId = Long.valueOf(String.valueOf(delegateExecution.getVariable("videoId")));
 
             if (
                     !authService.hasPermissionInDelegatedAuth(delegateExecution, videoId, "VideoInfo", "delete_any_comment") &&

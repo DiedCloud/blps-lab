@@ -3,6 +3,9 @@ package com.example.blps.dao.delegate.video;
 import com.example.blps.service.AuthService;
 import com.example.blps.service.VideoService;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.delegate.BpmnError;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +17,7 @@ public class EditVideo implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) {
         try {
-            Long videoId = Long.valueOf(delegateExecution.getVariable("videoId"));
+            Long videoId = Long.valueOf(String.valueOf(delegateExecution.getVariable("videoId")));
             String title = String.valueOf(delegateExecution.getVariable("title"));
             String description = String.valueOf(delegateExecution.getVariable("description"));
 

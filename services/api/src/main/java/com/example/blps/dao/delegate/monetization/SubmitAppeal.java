@@ -4,6 +4,9 @@ import com.example.blps.service.AppealService;
 import com.example.blps.service.AuthService;
 import com.example.blps.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.delegate.BpmnError;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +21,7 @@ public class SubmitAppeal implements JavaDelegate {
         String userId = delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId();
 
         try {
-            Long videoId = Long.valueOf(delegateExecution.getVariable("videoId"));
+            Long videoId = Long.valueOf(String.valueOf(delegateExecution.getVariable("videoId")));
             String reason = String.valueOf(delegateExecution.getVariable("reason"));
 
             if (!authService.hasPermissionInDelegatedAuth(delegateExecution, videoId, "VideoInfo", "appeal_monetization_on_any_video")) {

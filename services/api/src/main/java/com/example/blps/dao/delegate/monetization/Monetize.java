@@ -4,6 +4,9 @@ import com.example.blps.service.AuthService;
 import com.example.blps.service.UserService;
 import com.example.blps.service.VideoService;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.delegate.BpmnError;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +21,7 @@ public class Monetize implements JavaDelegate {
         String userId = delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId();
 
         try {
-            Long videoId = Long.valueOf(delegateExecution.getVariable("videoId"));
+            Long videoId = Long.valueOf(String.valueOf(delegateExecution.getVariable("videoId")));
 
             if (!authService.hasPermissionInDelegatedAuth(delegateExecution, videoId, "VideoInfo", "request_monetization_on_any_video")) {
                 throw new IllegalAccessException("Forbidden");
