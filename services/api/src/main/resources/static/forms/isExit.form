@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "label": "Вы хотите попробовать ещё раз?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0lscikj",
+        "columns": null
+      },
+      "id": "Field_08trvqo",
+      "key": "isRetry"
+    }
+  ],
+  "type": "default",
+  "id": "is-exit-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.11.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}

@@ -1,0 +1,59 @@
+{
+  "components": [
+    {
+      "label": "Введите название продукта:",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0gd3mcy",
+        "columns": null
+      },
+      "id": "Field_0tgfqgh",
+      "key": "name",
+      "validate": {
+        "minLength": 3,
+        "maxLength": 256,
+        "required": true
+      }
+    },
+    {
+      "label": "Введите вес продукта:",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1ohtkx6",
+        "columns": null
+      },
+      "id": "Field_04xqzj4",
+      "key": "weight",
+      "validate": {
+        "minLength": 1,
+        "maxLength": 256,
+        "required": true,
+        "pattern": "[+-]?([0-9]*[.])?[0-9]+"
+      }
+    },
+    {
+      "label": "Введите описание продукта",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0o905aj",
+        "columns": null
+      },
+      "id": "Field_05fflsq",
+      "key": "consumerInfo",
+      "validate": {
+        "minLength": 3,
+        "maxLength": 256,
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "product-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.11.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}

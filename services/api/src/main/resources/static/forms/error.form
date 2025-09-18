@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "label": "Процесс завершился c ошибкой и попробуйте еще раз:",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1z04scd",
+        "columns": null
+      },
+      "id": "Field_0tennaw",
+      "key": "error"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0801z2g",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.11.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}

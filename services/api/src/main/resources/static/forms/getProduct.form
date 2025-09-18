@@ -1,0 +1,27 @@
+{
+  "components": [
+    {
+      "label": "Введите ID продукта:",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0oipbtt",
+        "columns": null
+      },
+      "id": "Field_1pjk4id",
+      "key": "id",
+      "validate": {
+        "pattern": "^[1-9]\\d*$",
+        "minLength": 1
+      }
+    }
+  ],
+  "type": "default",
+  "id": "get-product-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.11.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}

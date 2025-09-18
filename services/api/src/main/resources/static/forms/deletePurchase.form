@@ -1,0 +1,28 @@
+{
+  "components": [
+    {
+      "label": "Введите артикул покупки:",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0gd3mcy",
+        "columns": null
+      },
+      "id": "Field_0tgfqgh",
+      "key": "purchaseId",
+      "validate": {
+        "minLength": 1,
+        "maxLength": 256,
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "delete-purchase-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.12.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 9
+}

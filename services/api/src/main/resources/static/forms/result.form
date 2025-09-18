@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "label": "Результат процесса:",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_01smsz1",
+        "columns": null
+      },
+      "id": "Field_1e9sq10",
+      "key": "result"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0g7g20u",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.11.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 8
+}
