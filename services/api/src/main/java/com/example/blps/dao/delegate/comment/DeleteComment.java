@@ -2,6 +2,7 @@ package com.example.blps.dao.delegate.comment;
 
 import com.example.blps.service.AuthService;
 import com.example.blps.service.CommentService;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -9,6 +10,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Named("deleteComment")
 @RequiredArgsConstructor
 public class DeleteComment implements JavaDelegate {
     private final CommentService commentService;

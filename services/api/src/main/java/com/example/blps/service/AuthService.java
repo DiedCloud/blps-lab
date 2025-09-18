@@ -48,7 +48,7 @@ public class AuthService {
         return jwtService.generateToken(user);
     }
 
-    public void checkTokenInDelegatedAuth(Long userId) throws IllegalAccessException {
+    public void checkTokenInDelegatedAuth(String userId) throws IllegalAccessException {
         String token = TokenService.getUserToken(userId);
         if (token == null)
             throw new IllegalAccessException("Unauthorized");
@@ -58,9 +58,9 @@ public class AuthService {
     public boolean hasPermissionInDelegatedAuth(DelegateExecution delegateExecution, Long targetId, String targetType, String authority) throws IllegalAccessException {
         String userId = delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId();
 
-        checkTokenInDelegatedAuth(Long.valueOf(userId));
+        checkTokenInDelegatedAuth(userId);
 
-        User user = userService.getById(Long.valueOf(userId));
+        User user = userService.getCurrentUser();
 
         return permissionEvaluator.hasPermission(
                 new UsernamePasswordAuthenticationToken(user, null),
@@ -73,9 +73,9 @@ public class AuthService {
     public boolean hasNoAuthorityInDelegatedAuth(DelegateExecution delegateExecution, String... authorities) throws IllegalAccessException {
         String userId = delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId();
 
-        checkTokenInDelegatedAuth(Long.valueOf(userId));
+        checkTokenInDelegatedAuth(userId);
 
-        UserDetailsImpl user = new UserDetailsImpl(userService.getById(Long.valueOf(userId)));
+        UserDetailsImpl user = new UserDetailsImpl(userService.getCurrentUser());
 
         return Collections.disjoint(user.getAuthorities(), List.of(authorities));
     }

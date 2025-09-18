@@ -3,6 +3,7 @@ package com.example.blps.dao.delegate.monetization;
 import com.example.blps.service.AppealService;
 import com.example.blps.service.AuthService;
 import com.example.blps.service.UserService;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -10,6 +11,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Named("submitAppeal")
 @RequiredArgsConstructor
 public class SubmitAppeal implements JavaDelegate {
     private final AppealService appealService;
@@ -28,7 +30,7 @@ public class SubmitAppeal implements JavaDelegate {
                 throw new IllegalAccessException("Forbidden");
             }
 
-            var res = appealService.submitAppeal(videoId, reason, userService.getById(Long.valueOf(userId)));
+            var res = appealService.submitAppeal(videoId, reason, userService.getCurrentUser());
 
             delegateExecution.setVariable("result", res);
         } catch (Throwable throwable) {

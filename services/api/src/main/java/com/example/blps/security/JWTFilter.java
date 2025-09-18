@@ -61,7 +61,7 @@ public class JWTFilter extends OncePerRequestFilter {
     public void doFilter(String jwt) {
         String username = jwtService.extractUserName(jwt);
 
-        if (username != null && !username.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && !username.isEmpty()) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {

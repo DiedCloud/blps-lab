@@ -2,6 +2,7 @@ package com.example.blps.dao.delegate.video;
 
 import com.example.blps.service.AuthService;
 import com.example.blps.service.VideoService;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -9,6 +10,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Named("deleteVideo")
 @RequiredArgsConstructor
 public class DeleteVideo implements JavaDelegate {
     private final VideoService videoService;

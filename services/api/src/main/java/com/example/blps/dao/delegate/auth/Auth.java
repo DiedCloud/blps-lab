@@ -2,6 +2,7 @@ package com.example.blps.dao.delegate.auth;
 
 import com.example.blps.service.AuthService;
 import com.example.blps.service.TokenService;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -9,6 +10,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Named("auth")
 @RequiredArgsConstructor
 public class Auth implements JavaDelegate {
     private final AuthService authService;
@@ -16,7 +18,7 @@ public class Auth implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) {
-        Long userId = Long.valueOf(
+        String userId = String.valueOf(
                 delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId()
         );
         try {

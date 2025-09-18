@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
@@ -30,13 +28,9 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public User getById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
-    }
-
     public User getCurrentUser() {
-        return getByLogin(SecurityContextHolder.getContext().getAuthentication().getName());
+        UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return getByLogin(user.getUsername());
     }
 
     public User createUser(String login, String password, String name) {

@@ -1,5 +1,3 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 plugins {
     java
     id("org.springframework.boot") version "3.4.4"
@@ -55,13 +53,15 @@ dependencies {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
     }
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-    compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0") // compile-time only
+    compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
     // camunda
-    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter")
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter") {
+        exclude(group = "com.sun.xml.bind", module = "jaxb-core")
+    }
     implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest")
     implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp")
-//    implementation("org.camunda.bpm:camunda-engine")
+    // implementation("org.camunda.bpm:camunda-engine")
     // implementation("org.camunda.bpm:camunda-engine-plugin-spin")
     // implementation("org.camunda.bpm:camunda-engine-plugin-connect")
     // implementation("org.camunda.spin:camunda-spin-dataformat-all")
@@ -113,16 +113,12 @@ dependencies {
     implementation("jakarta.jms:jakarta.jms-api:3.1.0")
 }
 
-tasks.named<Jar>("bootJar") {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 tasks {
-    named<BootJar>("bootJar") {
-        enabled = false
+    named<Jar>("bootJar") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
-    // можно настроить имя war
     withType<War> {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         archiveBaseName.set("api")
         archiveVersion.set("0.0.3")
     }

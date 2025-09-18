@@ -1,6 +1,7 @@
 package com.example.blps.dao.delegate.monetization;
 
 import com.example.blps.service.*;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -8,6 +9,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Named("moderate")
 @RequiredArgsConstructor
 public class Moderate implements JavaDelegate {
     private final VideoService videoService;

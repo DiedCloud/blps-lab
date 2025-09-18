@@ -3,6 +3,7 @@ package com.example.blps.dao.delegate.monetization;
 import com.example.blps.service.AuthService;
 import com.example.blps.service.UserService;
 import com.example.blps.service.VideoService;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -10,6 +11,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Named("monetize")
 @RequiredArgsConstructor
 public class Monetize implements JavaDelegate {
     private final VideoService videoService;
@@ -18,8 +20,6 @@ public class Monetize implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) {
-        String userId = delegateExecution.getProcessEngineServices().getIdentityService().getCurrentAuthentication().getUserId();
-
         try {
             Long videoId = Long.valueOf(String.valueOf(delegateExecution.getVariable("videoId")));
 
@@ -27,7 +27,7 @@ public class Monetize implements JavaDelegate {
                 throw new IllegalAccessException("Forbidden");
             }
 
-            var res = videoService.requestMonetization(videoId, userService.getById(Long.valueOf(userId)));
+            var res = videoService.requestMonetization(videoId, userService.getCurrentUser());
 
             delegateExecution.setVariable("result", res);
         } catch (Throwable throwable) {

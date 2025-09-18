@@ -2,6 +2,7 @@ package com.example.blps.dao.delegate.transcription;
 
 import com.example.blps.service.AuthService;
 import com.example.blps.service.TranscriptionService;
+import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+@Named("getTranscription")
 @RequiredArgsConstructor
 public class GetTranscription implements JavaDelegate {
     private final TranscriptionService transcriptionService;
