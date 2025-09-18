@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     java
     id("org.springframework.boot") version "3.4.4"
@@ -30,14 +32,30 @@ dependencyManagement {
     }
 }
 
+configurations.all {
+    exclude(group = "ch.qos.logback", module = "logback-classic")
+    exclude(group = "ch.qos.logback", module = "logback-core")
+}
+
 dependencies {
     implementation(project(":shared"))
 
     // spring boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-security") {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
+    implementation("org.springframework.boot:spring-boot-starter-actuator") {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
+
+    // excluding tomcat to run in wildfly
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
+    }
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0") // compile-time only
 
     // camunda
     implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter")
@@ -97,6 +115,17 @@ dependencies {
 
 tasks.named<Jar>("bootJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks {
+    named<BootJar>("bootJar") {
+        enabled = false
+    }
+    // можно настроить имя war
+    withType<War> {
+        archiveBaseName.set("api")
+        archiveVersion.set("0.0.3")
+    }
 }
 
 tasks.withType<Test> {

@@ -66,9 +66,8 @@ public class SecurityConfig {
             ar.requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll();
             ar.requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll();
             ar.requestMatchers(mvc.pattern("/actuator/health")).permitAll();
-            var endpoint = mvc.pattern("/video/{videoId}");
-            endpoint.setMethod(HttpMethod.GET);
-            ar.requestMatchers(endpoint).permitAll();
+            ar.requestMatchers(mvc.pattern(HttpMethod.GET, "/video/{videoId}")).permitAll();
+            ar.requestMatchers(mvc.pattern("/operate/**")).permitAll();
             ar.requestMatchers(mvc.pattern("/camunda/**")).permitAll();
             ar.requestMatchers(mvc.pattern("/engine-rest")).permitAll();
             ar.anyRequest().permitAll();
