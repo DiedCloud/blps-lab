@@ -69,6 +69,8 @@ public class SecurityConfig {
             var endpoint = mvc.pattern("/video/{videoId}");
             endpoint.setMethod(HttpMethod.GET);
             ar.requestMatchers(endpoint).permitAll();
+            ar.requestMatchers(mvc.pattern("/camunda/app/**")).permitAll();
+            ar.requestMatchers(mvc.pattern("/engine-rest")).permitAll();
             ar.anyRequest().authenticated();
         }).httpBasic(withDefaults());
 

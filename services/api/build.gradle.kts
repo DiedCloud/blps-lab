@@ -40,12 +40,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     // camunda
-    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter"){
-        exclude(group = "com.sun.xml.bind", module = "jaxb-core")
-    }
-    // implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest")
-    // implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp")
-    implementation("org.camunda.bpm:camunda-engine")
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter")
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest")
+    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp")
+//    implementation("org.camunda.bpm:camunda-engine")
     // implementation("org.camunda.bpm:camunda-engine-plugin-spin")
     // implementation("org.camunda.bpm:camunda-engine-plugin-connect")
     // implementation("org.camunda.spin:camunda-spin-dataformat-all")
@@ -95,6 +93,10 @@ dependencies {
     implementation("org.springframework:spring-jms:7.0.0-M8")
     // jakarta jms api
     implementation("jakarta.jms:jakarta.jms-api:3.1.0")
+}
+
+tasks.named<Jar>("bootJar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.withType<Test> {
